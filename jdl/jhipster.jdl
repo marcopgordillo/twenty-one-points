@@ -23,7 +23,7 @@ entity Preference {
 }
 
 enum Unit {
-	kb, lb
+	Kg, Lb
 }
 
 relationship ManyToOne {
