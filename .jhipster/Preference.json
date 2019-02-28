@@ -21,14 +21,14 @@
     "relationships": [
         {
             "relationshipType": "many-to-one",
-            "relationshipName": "user",
             "otherEntityName": "user",
-            "otherEntityField": "login",
-            "otherEntityRelationshipName": "preference"
+            "otherEntityRelationshipName": "preference",
+            "relationshipName": "user",
+            "otherEntityField": "login"
         }
     ],
-    "changelogDate": "20190228215639",
-    "entityTableName": "preference",
+    "changelogDate": "20190228220748",
+    "entityTableName": "preferences",
     "dto": "no",
     "pagination": "no",
     "service": "serviceImpl",

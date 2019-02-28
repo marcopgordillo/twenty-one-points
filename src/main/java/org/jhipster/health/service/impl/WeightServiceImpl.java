@@ -82,7 +82,8 @@ public class WeightServiceImpl implements WeightService {
      */
     @Override
     public void delete(Long id) {
-        log.debug("Request to delete Weight : {}", id);        weightRepository.deleteById(id);
+        log.debug("Request to delete Weight : {}", id);
+        weightRepository.deleteById(id);
         weightSearchRepository.deleteById(id);
     }
 

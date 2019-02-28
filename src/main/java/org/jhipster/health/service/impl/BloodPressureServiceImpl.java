@@ -82,7 +82,8 @@ public class BloodPressureServiceImpl implements BloodPressureService {
      */
     @Override
     public void delete(Long id) {
-        log.debug("Request to delete BloodPressure : {}", id);        bloodPressureRepository.deleteById(id);
+        log.debug("Request to delete BloodPressure : {}", id);
+        bloodPressureRepository.deleteById(id);
         bloodPressureSearchRepository.deleteById(id);
     }
 

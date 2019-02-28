@@ -17,7 +17,7 @@ import java.util.Objects;
  * A Weight.
  */
 @Entity
-@Table(name = "weight")
+@Table(name = "weights")
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 @Document(indexName = "weight")
 public class Weight implements Serializable {
@@ -39,7 +39,7 @@ public class Weight implements Serializable {
 
     @ManyToOne
     @JsonIgnoreProperties("weights")
-    private User login;
+    private User user;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
     public Long getId() {
@@ -76,17 +76,17 @@ public class Weight implements Serializable {
         this.weight = weight;
     }
 
-    public User getLogin() {
-        return login;
+    public User getUser() {
+        return user;
     }
 
-    public Weight login(User user) {
-        this.login = user;
+    public Weight user(User user) {
+        this.user = user;
         return this;
     }
 
-    public void setLogin(User user) {
-        this.login = user;
+    public void setUser(User user) {
+        this.user = user;
     }
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here, do not remove
 

@@ -6,9 +6,9 @@ export interface IBloodPressure {
     timestamp?: Moment;
     systolic?: number;
     diastolic?: number;
-    login?: IUser;
+    user?: IUser;
 }
 
 export class BloodPressure implements IBloodPressure {
-    constructor(public id?: number, public timestamp?: Moment, public systolic?: number, public diastolic?: number, public login?: IUser) {}
+    constructor(public id?: number, public timestamp?: Moment, public systolic?: number, public diastolic?: number, public user?: IUser) {}
 }

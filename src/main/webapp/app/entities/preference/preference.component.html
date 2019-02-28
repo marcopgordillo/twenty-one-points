@@ -32,7 +32,7 @@
             <th><span jhiTranslate="global.field.id">ID</span></th>
             <th><span jhiTranslate="twentyOnePointsApp.preference.weeklyGoal">Weekly Goal</span></th>
             <th><span jhiTranslate="twentyOnePointsApp.preference.weightUnits">Weight Units</span></th>
-            <th><span jhiTranslate="twentyOnePointsApp.preference.login">Login</span></th>
+            <th><span jhiTranslate="twentyOnePointsApp.preference.user">User</span></th>
             <th></th>
             </tr>
             </thead>
@@ -42,7 +42,7 @@
                 <td>{{preference.weeklyGoal}}</td>
                 <td jhiTranslate="{{'twentyOnePointsApp.Unit.' + preference.weightUnits}}">{{preference.weightUnits}}</td>
                 <td>
-                    {{preference.login?.id}}
+                    {{preference.user?.login}}
                 </td>
                 <td class="text-right">
                     <div class="btn-group flex-btn-group-container">

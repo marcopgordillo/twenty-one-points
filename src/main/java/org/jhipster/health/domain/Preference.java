@@ -18,7 +18,7 @@ import org.jhipster.health.domain.enumeration.Unit;
  * A Preference.
  */
 @Entity
-@Table(name = "preference")
+@Table(name = "preferences")
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 @Document(indexName = "preference")
 public class Preference implements Serializable {
@@ -42,7 +42,7 @@ public class Preference implements Serializable {
 
     @ManyToOne
     @JsonIgnoreProperties("preferences")
-    private User login;
+    private User user;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
     public Long getId() {
@@ -79,17 +79,17 @@ public class Preference implements Serializable {
         this.weightUnits = weightUnits;
     }
 
-    public User getLogin() {
-        return login;
+    public User getUser() {
+        return user;
     }
 
-    public Preference login(User user) {
-        this.login = user;
+    public Preference user(User user) {
+        this.user = user;
         return this;
     }
 
-    public void setLogin(User user) {
-        this.login = user;
+    public void setUser(User user) {
+        this.user = user;
     }
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here, do not remove
 

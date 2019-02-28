@@ -13,7 +13,7 @@ import java.util.List;
 @Repository
 public interface WeightRepository extends JpaRepository<Weight, Long> {
 
-    @Query("select weight from Weight weight where weight.login.login = ?#{principal.username}")
-    List<Weight> findByLoginIsCurrentUser();
+    @Query("select weights from Weight weights where weights.user.login = ?#{principal.username}")
+    List<Weight> findByUserIsCurrentUser();
 
 }

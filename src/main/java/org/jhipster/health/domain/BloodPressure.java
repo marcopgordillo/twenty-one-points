@@ -17,7 +17,7 @@ import java.util.Objects;
  * A BloodPressure.
  */
 @Entity
-@Table(name = "blood_pressure")
+@Table(name = "blood_pressures")
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 @Document(indexName = "bloodpressure")
 public class BloodPressure implements Serializable {
@@ -43,7 +43,7 @@ public class BloodPressure implements Serializable {
 
     @ManyToOne
     @JsonIgnoreProperties("bloodPressures")
-    private User login;
+    private User user;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
     public Long getId() {
@@ -93,17 +93,17 @@ public class BloodPressure implements Serializable {
         this.diastolic = diastolic;
     }
 
-    public User getLogin() {
-        return login;
+    public User getUser() {
+        return user;
     }
 
-    public BloodPressure login(User user) {
-        this.login = user;
+    public BloodPressure user(User user) {
+        this.user = user;
         return this;
     }
 
-    public void setLogin(User user) {
-        this.login = user;
+    public void setUser(User user) {
+        this.user = user;
     }
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here, do not remove
 

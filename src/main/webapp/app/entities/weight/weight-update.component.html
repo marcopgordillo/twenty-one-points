@@ -43,10 +43,10 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="form-control-label" jhiTranslate="twentyOnePointsApp.weight.login" for="field_login">Login</label>
-                    <select class="form-control" id="field_login" name="login" [(ngModel)]="weight.login" >
+                    <label class="form-control-label" jhiTranslate="twentyOnePointsApp.weight.user" for="field_user">User</label>
+                    <select class="form-control" id="field_user" name="user" [(ngModel)]="weight.user" >
                         <option [ngValue]="null"></option>
-                        <option [ngValue]="userOption.id === weight.login?.id ? weight.login : userOption" *ngFor="let userOption of users; trackBy: trackUserById">{{userOption.id}}</option>
+                        <option [ngValue]="userOption.id === weight.user?.id ? weight.user : userOption" *ngFor="let userOption of users; trackBy: trackUserById">{{userOption.login}}</option>
                     </select>
                 </div>
             </div>

@@ -82,7 +82,8 @@ public class PointServiceImpl implements PointService {
      */
     @Override
     public void delete(Long id) {
-        log.debug("Request to delete Point : {}", id);        pointRepository.deleteById(id);
+        log.debug("Request to delete Point : {}", id);
+        pointRepository.deleteById(id);
         pointSearchRepository.deleteById(id);
     }
 

@@ -13,7 +13,7 @@ import java.util.List;
 @Repository
 public interface PointRepository extends JpaRepository<Point, Long> {
 
-    @Query("select point from Point point where point.login.login = ?#{principal.username}")
-    List<Point> findByLoginIsCurrentUser();
+    @Query("select points from Point points where points.user.login = ?#{principal.username}")
+    List<Point> findByUserIsCurrentUser();
 
 }

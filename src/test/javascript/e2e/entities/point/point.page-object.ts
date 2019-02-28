@@ -31,7 +31,7 @@ export class PointUpdatePage {
     mealsInput = element(by.id('field_meals'));
     alcoholInput = element(by.id('field_alcohol'));
     notesInput = element(by.id('field_notes'));
-    loginSelect = element(by.id('field_login'));
+    userSelect = element(by.id('field_user'));
 
     async getPageTitle() {
         return this.pageTitle.getAttribute('jhiTranslate');
@@ -77,23 +77,23 @@ export class PointUpdatePage {
         return this.notesInput.getAttribute('value');
     }
 
-    async loginSelectLastOption() {
-        await this.loginSelect
+    async userSelectLastOption() {
+        await this.userSelect
             .all(by.tagName('option'))
             .last()
             .click();
     }
 
-    async loginSelectOption(option) {
-        await this.loginSelect.sendKeys(option);
+    async userSelectOption(option) {
+        await this.userSelect.sendKeys(option);
     }
 
-    getLoginSelect(): ElementFinder {
-        return this.loginSelect;
+    getUserSelect(): ElementFinder {
+        return this.userSelect;
     }
 
-    async getLoginSelectedOption() {
-        return this.loginSelect.element(by.css('option:checked')).getText();
+    async getUserSelectedOption() {
+        return this.userSelect.element(by.css('option:checked')).getText();
     }
 
     async save() {

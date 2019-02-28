@@ -32,7 +32,7 @@
             <th jhiSortBy="id"><span jhiTranslate="global.field.id">ID</span> <fa-icon [icon]="'sort'"></fa-icon></th>
             <th jhiSortBy="timestamp"><span jhiTranslate="twentyOnePointsApp.weight.timestamp">Timestamp</span> <fa-icon [icon]="'sort'"></fa-icon></th>
             <th jhiSortBy="weight"><span jhiTranslate="twentyOnePointsApp.weight.weight">Weight</span> <fa-icon [icon]="'sort'"></fa-icon></th>
-            <th jhiSortBy="login.id"><span jhiTranslate="twentyOnePointsApp.weight.login">Login</span> <fa-icon [icon]="'sort'"></fa-icon></th>
+            <th jhiSortBy="user.login"><span jhiTranslate="twentyOnePointsApp.weight.user">User</span> <fa-icon [icon]="'sort'"></fa-icon></th>
             <th></th>
             </tr>
             </thead>
@@ -42,7 +42,7 @@
                 <td>{{weight.timestamp | date:'medium'}}</td>
                 <td>{{weight.weight}}</td>
                 <td>
-                    {{weight.login?.id}}
+                    {{weight.user?.login}}
                 </td>
                 <td class="text-right">
                     <div class="btn-group flex-btn-group-container">

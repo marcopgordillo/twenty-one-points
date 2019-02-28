@@ -26,14 +26,14 @@
     "relationships": [
         {
             "relationshipType": "many-to-one",
-            "relationshipName": "user",
             "otherEntityName": "user",
-            "otherEntityField": "login",
-            "otherEntityRelationshipName": "bloodPressure"
+            "otherEntityRelationshipName": "bloodPressure",
+            "relationshipName": "user",
+            "otherEntityField": "login"
         }
     ],
-    "changelogDate": "20190228215638",
-    "entityTableName": "blood_pressure",
+    "changelogDate": "20190228220747",
+    "entityTableName": "blood_pressures",
     "dto": "no",
     "pagination": "infinite-scroll",
     "service": "serviceImpl",

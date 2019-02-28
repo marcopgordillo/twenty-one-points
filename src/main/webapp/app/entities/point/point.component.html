@@ -35,7 +35,7 @@
             <th jhiSortBy="meals"><span jhiTranslate="twentyOnePointsApp.point.meals">Meals</span> <fa-icon [icon]="'sort'"></fa-icon></th>
             <th jhiSortBy="alcohol"><span jhiTranslate="twentyOnePointsApp.point.alcohol">Alcohol</span> <fa-icon [icon]="'sort'"></fa-icon></th>
             <th jhiSortBy="notes"><span jhiTranslate="twentyOnePointsApp.point.notes">Notes</span> <fa-icon [icon]="'sort'"></fa-icon></th>
-            <th jhiSortBy="login.id"><span jhiTranslate="twentyOnePointsApp.point.login">Login</span> <fa-icon [icon]="'sort'"></fa-icon></th>
+            <th jhiSortBy="user.login"><span jhiTranslate="twentyOnePointsApp.point.user">User</span> <fa-icon [icon]="'sort'"></fa-icon></th>
             <th></th>
             </tr>
             </thead>
@@ -48,7 +48,7 @@
                 <td>{{point.alcohol}}</td>
                 <td>{{point.notes}}</td>
                 <td>
-                    {{point.login?.id}}
+                    {{point.user?.login}}
                 </td>
                 <td class="text-right">
                     <div class="btn-group flex-btn-group-container">

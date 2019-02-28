@@ -42,7 +42,7 @@ describe('Weight e2e test', () => {
         await promise.all([
             weightUpdatePage.setTimestampInput('01/01/2001' + protractor.Key.TAB + '02:30AM'),
             weightUpdatePage.setWeightInput('5'),
-            weightUpdatePage.loginSelectLastOption()
+            weightUpdatePage.userSelectLastOption()
         ]);
         expect(await weightUpdatePage.getTimestampInput()).to.contain('2001-01-01T02:30');
         expect(await weightUpdatePage.getWeightInput()).to.eq('5');

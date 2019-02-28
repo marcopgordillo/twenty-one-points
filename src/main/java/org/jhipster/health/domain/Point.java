@@ -17,7 +17,7 @@ import java.util.Objects;
  * A Point.
  */
 @Entity
-@Table(name = "point")
+@Table(name = "points")
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 @Document(indexName = "point")
 public class Point implements Serializable {
@@ -48,7 +48,7 @@ public class Point implements Serializable {
 
     @ManyToOne
     @JsonIgnoreProperties("points")
-    private User login;
+    private User user;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
     public Long getId() {
@@ -124,17 +124,17 @@ public class Point implements Serializable {
         this.notes = notes;
     }
 
-    public User getLogin() {
-        return login;
+    public User getUser() {
+        return user;
     }
 
-    public Point login(User user) {
-        this.login = user;
+    public Point user(User user) {
+        this.user = user;
         return this;
     }
 
-    public void setLogin(User user) {
-        this.login = user;
+    public void setUser(User user) {
+        this.user = user;
     }
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here, do not remove
 

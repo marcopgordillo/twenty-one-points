@@ -32,13 +32,13 @@
     "relationships": [
         {
             "relationshipType": "many-to-one",
-            "relationshipName": "user",
             "otherEntityName": "user",
-            "otherEntityField": "login",
-            "otherEntityRelationshipName": "point"
+            "otherEntityRelationshipName": "point",
+            "relationshipName": "user",
+            "otherEntityField": "login"
         }
     ],
-    "changelogDate": "20190228215636",
+    "changelogDate": "20190228220745",
     "entityTableName": "points",
     "dto": "no",
     "pagination": "pagination",

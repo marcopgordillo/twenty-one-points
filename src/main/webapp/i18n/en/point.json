@@ -21,7 +21,7 @@
             "meals": "Meals",
             "alcohol": "Alcohol",
             "notes": "Notes",
-            "login": "Login"
+            "user": "User"
         }
     }
 }

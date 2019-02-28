@@ -45,7 +45,7 @@ describe('Point e2e test', () => {
             pointUpdatePage.setMealsInput('5'),
             pointUpdatePage.setAlcoholInput('5'),
             pointUpdatePage.setNotesInput('notes'),
-            pointUpdatePage.loginSelectLastOption()
+            pointUpdatePage.userSelectLastOption()
         ]);
         expect(await pointUpdatePage.getDateInput()).to.eq('2000-12-31');
         expect(await pointUpdatePage.getExerciseInput()).to.eq('5');

@@ -9,9 +9,9 @@ export interface IPreference {
     id?: number;
     weeklyGoal?: number;
     weightUnits?: Unit;
-    login?: IUser;
+    user?: IUser;
 }
 
 export class Preference implements IPreference {
-    constructor(public id?: number, public weeklyGoal?: number, public weightUnits?: Unit, public login?: IUser) {}
+    constructor(public id?: number, public weeklyGoal?: number, public weightUnits?: Unit, public user?: IUser) {}
 }

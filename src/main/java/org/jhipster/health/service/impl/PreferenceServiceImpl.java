@@ -82,7 +82,8 @@ public class PreferenceServiceImpl implements PreferenceService {
      */
     @Override
     public void delete(Long id) {
-        log.debug("Request to delete Preference : {}", id);        preferenceRepository.deleteById(id);
+        log.debug("Request to delete Preference : {}", id);
+        preferenceRepository.deleteById(id);
         preferenceSearchRepository.deleteById(id);
     }
 

@@ -19,14 +19,14 @@
     "relationships": [
         {
             "relationshipType": "many-to-one",
-            "relationshipName": "user",
             "otherEntityName": "user",
-            "otherEntityField": "login",
-            "otherEntityRelationshipName": "weight"
+            "otherEntityRelationshipName": "weight",
+            "relationshipName": "user",
+            "otherEntityField": "login"
         }
     ],
-    "changelogDate": "20190228215637",
-    "entityTableName": "weight",
+    "changelogDate": "20190228220746",
+    "entityTableName": "weights",
     "dto": "no",
     "pagination": "infinite-scroll",
     "service": "serviceImpl",

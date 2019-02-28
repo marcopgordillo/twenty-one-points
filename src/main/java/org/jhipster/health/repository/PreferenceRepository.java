@@ -13,7 +13,7 @@ import java.util.List;
 @Repository
 public interface PreferenceRepository extends JpaRepository<Preference, Long> {
 
-    @Query("select preference from Preference preference where preference.login.login = ?#{principal.username}")
-    List<Preference> findByLoginIsCurrentUser();
+    @Query("select preferences from Preference preferences where preferences.user.login = ?#{principal.username}")
+    List<Preference> findByUserIsCurrentUser();
 
 }

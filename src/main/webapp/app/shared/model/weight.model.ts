@@ -5,9 +5,9 @@ export interface IWeight {
     id?: number;
     timestamp?: Moment;
     weight?: number;
-    login?: IUser;
+    user?: IUser;
 }
 
 export class Weight implements IWeight {
-    constructor(public id?: number, public timestamp?: Moment, public weight?: number, public login?: IUser) {}
+    constructor(public id?: number, public timestamp?: Moment, public weight?: number, public user?: IUser) {}
 }

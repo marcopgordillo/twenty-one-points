@@ -8,7 +8,7 @@ export interface IPoint {
     meals?: number;
     alcohol?: number;
     notes?: string;
-    login?: IUser;
+    user?: IUser;
 }
 
 export class Point implements IPoint {
@@ -19,6 +19,6 @@ export class Point implements IPoint {
         public meals?: number,
         public alcohol?: number,
         public notes?: string,
-        public login?: IUser
+        public user?: IUser
     ) {}
 }

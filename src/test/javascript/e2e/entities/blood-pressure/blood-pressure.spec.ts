@@ -43,7 +43,7 @@ describe('BloodPressure e2e test', () => {
             bloodPressureUpdatePage.setTimestampInput('01/01/2001' + protractor.Key.TAB + '02:30AM'),
             bloodPressureUpdatePage.setSystolicInput('5'),
             bloodPressureUpdatePage.setDiastolicInput('5'),
-            bloodPressureUpdatePage.loginSelectLastOption()
+            bloodPressureUpdatePage.userSelectLastOption()
         ]);
         expect(await bloodPressureUpdatePage.getTimestampInput()).to.contain('2001-01-01T02:30');
         expect(await bloodPressureUpdatePage.getSystolicInput()).to.eq('5');
