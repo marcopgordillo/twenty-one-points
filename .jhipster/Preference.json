@@ -21,9 +21,9 @@
     "relationships": [
         {
             "relationshipType": "many-to-one",
-            "relationshipName": "login",
+            "relationshipName": "user",
             "otherEntityName": "user",
-            "otherEntityField": "id",
+            "otherEntityField": "login",
             "otherEntityRelationshipName": "preference"
         }
     ],
