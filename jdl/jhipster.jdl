@@ -1,5 +1,5 @@
 entity Point {
-	date Localdate required,
+	date LocalDate required,
     exercise Integer,
     meals Integer,
     alcohol Integer,
@@ -23,7 +23,7 @@ entity Preference {
 }
 
 enum Unit {
-	kb, lb
+	Kg, Lb
 }
 
 relationship ManyToOne {

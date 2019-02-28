@@ -1,0 +1,38 @@
+// JDL definition for application 'TwentyOnePoints' generated with command 'jhipster export-jdl'
+
+entity Point (points) {
+  date LocalDate required,
+  exercise Integer,
+  meals Integer,
+  alcohol Integer,
+  notes String maxlength(140)
+}
+entity Weight (weights) {
+  timestamp ZonedDateTime required,
+  weight Double required
+}
+entity BloodPressure (blood_pressures) {
+  timestamp ZonedDateTime required,
+  systolic Integer required,
+  diastolic Integer required
+}
+entity Preference (preferences) {
+  weeklyGoal Integer required min(10) max(21),
+  weightUnits Unit
+}
+
+enum Unit {
+  Kg,
+  Lb
+}
+
+relationship ManyToOne {
+  Point{user(login)} to User,
+  Weight{user(login)} to User,
+  BloodPressure{user(login)} to User,
+  Preference{user(login)} to User
+}
+
+paginate Point with pagination
+paginate Weight, BloodPressure with infinite-scroll
+service Point, Weight, BloodPressure, Preference with serviceImpl
