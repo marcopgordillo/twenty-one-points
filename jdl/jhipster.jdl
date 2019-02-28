@@ -1,5 +1,5 @@
 entity Point {
-	date Localdate required,
+	date LocalDate required,
     exercise Integer,
     meals Integer,
     alcohol Integer,
