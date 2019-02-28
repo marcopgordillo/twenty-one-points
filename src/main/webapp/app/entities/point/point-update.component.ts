@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { HttpResponse, HttpErrorResponse } from '@angular/common/http';
+import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
-import * as moment from 'moment';
 import { JhiAlertService } from 'ng-jhipster';
 import { IPoint } from 'app/shared/model/point.model';
 import { PointService } from './point.service';
@@ -47,6 +46,11 @@ export class PointUpdateComponent implements OnInit {
 
     save() {
         this.isSaving = true;
+
+        // convert booleans to ints
+        this.point.exercise = this.point.exercise ? 1 : 0;
+        this.point.meals = this.point.meals ? 1 : 0;
+        this.point.alcohol = this.point.alcohol ? 1 : 0;
         if (this.point.id !== undefined) {
             this.subscribeToSaveResponse(this.pointService.update(this.point));
         } else {

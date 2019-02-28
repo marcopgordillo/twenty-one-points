@@ -25,20 +25,17 @@
                         </small>
                     </div>
                 </div>
-                <div class="form-group">
-                    <label class="form-control-label" jhiTranslate="twentyOnePointsApp.point.exercise" for="field_exercise">Exercise</label>
-                    <input type="number" class="form-control" name="exercise" id="field_exercise"
-                        [(ngModel)]="point.exercise" />
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" name="exercise" id="field_exercise" [(ngModel)]="point.exercise" />
+                    <label class="form-check-label" jhiTranslate="twentyOnePointsApp.point.exercise" for="field_exercise"> Exercise</label>
                 </div>
-                <div class="form-group">
-                    <label class="form-control-label" jhiTranslate="twentyOnePointsApp.point.meals" for="field_meals">Meals</label>
-                    <input type="number" class="form-control" name="meals" id="field_meals"
-                        [(ngModel)]="point.meals" />
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" name="meals" id="field_meals" [(ngModel)]="point.meals" />
+                    <label class="form-check-label" jhiTranslate="twentyOnePointsApp.point.meals" for="field_meals">Meals</label>
                 </div>
-                <div class="form-group">
-                    <label class="form-control-label" jhiTranslate="twentyOnePointsApp.point.alcohol" for="field_alcohol">Alcohol</label>
-                    <input type="number" class="form-control" name="alcohol" id="field_alcohol"
-                        [(ngModel)]="point.alcohol" />
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" name="alcohol" id="field_alcohol" [(ngModel)]="point.alcohol" />
+                    <label class="form-check-label" jhiTranslate="twentyOnePointsApp.point.alcohol" for="field_alcohol">Alcohol</label>
                 </div>
                 <div class="form-group">
                     <label class="form-control-label" jhiTranslate="twentyOnePointsApp.point.notes" for="field_notes">Notes</label>
