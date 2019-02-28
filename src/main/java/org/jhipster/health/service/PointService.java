@@ -1,7 +1,6 @@
 package org.jhipster.health.service;
 
 import org.jhipster.health.domain.Point;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -53,4 +52,8 @@ public interface PointService {
      * @return the list of entities
      */
     Page<Point> search(String query, Pageable pageable);
+
+    Page<Point> findAllByOrderByDateDesc(Pageable pageable);
+
+    Page<Point> findByUserIsCurrentUser(Pageable pageable);
 }

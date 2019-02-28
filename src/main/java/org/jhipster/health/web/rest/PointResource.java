@@ -1,28 +1,30 @@
 package org.jhipster.health.web.rest;
+
+import io.github.jhipster.web.util.ResponseUtil;
+import io.micrometer.core.annotation.Timed;
+import io.swagger.annotations.ApiParam;
 import org.jhipster.health.domain.Point;
+import org.jhipster.health.repository.UserRepository;
+import org.jhipster.health.repository.search.PointSearchRepository;
+import org.jhipster.health.security.AuthoritiesConstants;
+import org.jhipster.health.security.SecurityUtils;
 import org.jhipster.health.service.PointService;
 import org.jhipster.health.web.rest.errors.BadRequestAlertException;
 import org.jhipster.health.web.rest.util.HeaderUtil;
 import org.jhipster.health.web.rest.util.PaginationUtil;
-import io.github.jhipster.web.util.ResponseUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
-
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.StreamSupport;
-
-import static org.elasticsearch.index.query.QueryBuilders.*;
 
 /**
  * REST controller for managing Point.
@@ -36,9 +38,13 @@ public class PointResource {
     private static final String ENTITY_NAME = "point";
 
     private final PointService pointService;
+    private final UserRepository userRepository;
+    private final PointSearchRepository pointsSearchRepository;
 
-    public PointResource(PointService pointService) {
+    public PointResource(PointService pointService, UserRepository userRepository, PointSearchRepository pointsSearchRepository) {
         this.pointService = pointService;
+        this.userRepository = userRepository;
+        this.pointsSearchRepository = pointsSearchRepository;
     }
 
     /**
@@ -49,12 +55,22 @@ public class PointResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
     @PostMapping("/points")
+    @Timed
     public ResponseEntity<Point> createPoint(@Valid @RequestBody Point point) throws URISyntaxException {
         log.debug("REST request to save Point : {}", point);
         if (point.getId() != null) {
-            throw new BadRequestAlertException("A new point cannot already have an ID", ENTITY_NAME, "idexists");
+            return ResponseEntity.badRequest().headers(
+                HeaderUtil.createFailureAlert(ENTITY_NAME, "idexists",
+                    "A new points cannot already have an ID")).body(null);
         }
+
+        if (!SecurityUtils.isCurrentUserInRole(AuthoritiesConstants.ADMIN)) {
+            log.debug("No user passed in, using current user: {}", SecurityUtils.getCurrentUserLogin());
+            point.setUser(userRepository.findOneByLogin(SecurityUtils.getCurrentUserLogin().orElse(null)).orElse(null));
+        }
+
         Point result = pointService.save(point);
+        pointsSearchRepository.save(result);
         return ResponseEntity.created(new URI("/api/points/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
             .body(result);
@@ -88,9 +104,17 @@ public class PointResource {
      * @return the ResponseEntity with status 200 (OK) and the list of points in body
      */
     @GetMapping("/points")
-    public ResponseEntity<List<Point>> getAllPoints(Pageable pageable) {
+    public ResponseEntity<List<Point>> getAllPoints(@ApiParam Pageable pageable) {
         log.debug("REST request to get a page of Points");
-        Page<Point> page = pointService.findAll(pageable);
+
+        Page<Point> page;
+
+        if (SecurityUtils.isCurrentUserInRole(AuthoritiesConstants.ADMIN)) {
+            page = pointService.findAllByOrderByDateDesc(pageable);
+        } else {
+            page = pointService.findByUserIsCurrentUser(pageable);
+        }
+
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/points");
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }

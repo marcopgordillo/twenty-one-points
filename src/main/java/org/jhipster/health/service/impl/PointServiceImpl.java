@@ -1,12 +1,11 @@
 package org.jhipster.health.service.impl;
 
-import org.jhipster.health.service.PointService;
 import org.jhipster.health.domain.Point;
 import org.jhipster.health.repository.PointRepository;
 import org.jhipster.health.repository.search.PointSearchRepository;
+import org.jhipster.health.service.PointService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -14,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
-import static org.elasticsearch.index.query.QueryBuilders.*;
+import static org.elasticsearch.index.query.QueryBuilders.queryStringQuery;
 
 /**
  * Service Implementation for managing Point.
@@ -99,4 +98,14 @@ public class PointServiceImpl implements PointService {
     public Page<Point> search(String query, Pageable pageable) {
         log.debug("Request to search for a page of Points for query {}", query);
         return pointSearchRepository.search(queryStringQuery(query), pageable);    }
+
+    @Override
+    public Page<Point> findAllByOrderByDateDesc(Pageable pageable) {
+        return pointRepository.findAllByOrderByDateDesc(pageable);
+    }
+
+    @Override
+    public Page<Point> findByUserIsCurrentUser(Pageable pageable) {
+        return pointRepository.findByUserIsCurrentUser(pageable);
+    }
 }
