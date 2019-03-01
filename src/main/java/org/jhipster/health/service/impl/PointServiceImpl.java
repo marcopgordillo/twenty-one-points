@@ -11,6 +11,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 import static org.elasticsearch.index.query.QueryBuilders.queryStringQuery;
@@ -107,5 +109,10 @@ public class PointServiceImpl implements PointService {
     @Override
     public Page<Point> findByUserIsCurrentUser(Pageable pageable) {
         return pointRepository.findByUserIsCurrentUser(pageable);
+    }
+
+    @Override
+    public List<Point> findAllByDateBetweenAndUserLogin(LocalDate startOfWeek, LocalDate endOfWeek, String currentUserLogin) {
+        return pointRepository.findAllByDateBetweenAndUserLogin(startOfWeek, endOfWeek, currentUserLogin);
     }
 }

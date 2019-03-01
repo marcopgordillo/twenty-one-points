@@ -10,6 +10,20 @@
             <div class="alert alert-success" *ngSwitchCase="true">
                 <span id="home-logged-message" *ngIf="account" jhiTranslate="home.logged.message"
                     [translateValues]="{username: account.login}"> You are logged in as user "{{account.login}}". </span>
+                <div class="row">
+                    <div class="col-md-11 col-xs-12">
+                        <ngb-progressbar max="21" [value]="pointsThisWeek.points" [striped]="true"
+                                         [hidden]="!pointsThisWeek.points">
+                                <span *ngIf="pointsThisWeek.points">
+                                    {{pointsThisWeek.points}} / Goal: 10
+                                </span>
+                        </ngb-progressbar>
+                        <ngb-alert [dismissible]="false" [hidden]="pointsThisWeek.points">
+                                <span jhiTranslate="home.points.getMoving">
+                                    No points yet this week, better get moving!</span>
+                        </ngb-alert>
+                    </div>
+                </div>
             </div>
 
             <div class="alert alert-warning" *ngSwitchCase="false">

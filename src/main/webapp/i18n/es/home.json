@@ -14,6 +14,11 @@
             "follow": "contacto @java_hipster en Twitter"
         },
         "like": "Si te gusta JHipster, danos una estrella en",
-        "github": "GitHub"
+        "github": "GitHub",
+        "points": {
+            "thisWeek": "Puntos para la semana {{date}}:",
+            "thisWeekMobile": "Puntos para {{date}}:",
+            "getMoving": "No tenemos datos aun esta semana, mejor a moverse!"
+        }
     }
 }

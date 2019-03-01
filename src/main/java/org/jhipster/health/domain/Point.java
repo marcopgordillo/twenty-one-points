@@ -4,11 +4,11 @@ package org.jhipster.health.domain;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.springframework.data.elasticsearch.annotations.Document;
 
 import javax.persistence.*;
-import javax.validation.constraints.*;
-
-import org.springframework.data.elasticsearch.annotations.Document;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Objects;
@@ -49,6 +49,17 @@ public class Point implements Serializable {
     @ManyToOne
     @JsonIgnoreProperties("points")
     private User user;
+
+    public Point() {
+    }
+
+    public Point(LocalDate date, Integer exercise, Integer meals, Integer alcohol, User user) {
+        this.date = date;
+        this.exercise = exercise;
+        this.meals = meals;
+        this.alcohol = alcohol;
+        this.user = user;
+    }
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
     public Long getId() {
