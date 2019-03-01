@@ -7,6 +7,8 @@ import { Subscription } from 'rxjs';
 import { PointService } from 'app/entities/point';
 import { Preference } from 'app/shared/model/preference.model';
 import { PreferenceService } from 'app/entities/preference';
+import { BloodPressureService } from 'app/entities/blood-pressure';
+import { D3ChartService } from 'app/home/d3-chart.service';
 
 @Component({
     selector: 'jhi-home',
@@ -20,18 +22,25 @@ export class HomeComponent implements OnInit, OnDestroy {
     pointsThisWeek: any = {};
     pointsPercentage: number;
     preference: Preference;
+    bpReadings: any = {};
+    bpOptions: any;
+    bpData: any;
 
     constructor(
         private accountService: AccountService,
         private loginModalService: LoginModalService,
         private eventManager: JhiEventManager,
         private pointService: PointService,
-        private preferenceService: PreferenceService
+        private preferenceService: PreferenceService,
+        private bloodPressureService: BloodPressureService
     ) {}
 
     ngOnInit() {
-        this.accountService.identity().then((account: Account) => {
+        this.accountService.identity().then(account => {
             this.account = account;
+            if (this.isAuthenticated()) {
+                this.getUserData();
+            }
         });
         this.registerAuthenticationSuccess();
     }
@@ -83,11 +92,47 @@ export class HomeComponent implements OnInit, OnDestroy {
             });
         });
 
-        /* // Get points for the current week
-        this.pointService.thisWeek().subscribe((points: any) => {
-            points = points.body;
-            this.pointsThisWeek = points;
-            this.pointsPercentage = (points.points / 21) * 100;
-        });*/
+        // Get blood pressure readings for the last 30 days
+        this.bloodPressureService.last30Days().subscribe((bpReadings: any) => {
+            bpReadings = bpReadings.body;
+            this.bpReadings = bpReadings;
+            this.bpOptions = { ...D3ChartService.getChartConfig() };
+            if (bpReadings.readings.length) {
+                this.bpOptions.title.text = bpReadings.period;
+                this.bpOptions.chart.yAxis.axisLabel = 'Blood Pressure';
+                const systolics = [];
+                const diastolics = [];
+                const upperValues = [];
+                const lowerValues = [];
+                bpReadings.readings.forEach(item => {
+                    systolics.push({
+                        x: new Date(item.timestamp),
+                        y: item.systolic
+                    });
+                    diastolics.push({
+                        x: new Date(item.timestamp),
+                        y: item.diastolic
+                    });
+                    upperValues.push(item.systolic);
+                    lowerValues.push(item.diastolic);
+                });
+                this.bpData = [
+                    {
+                        values: systolics,
+                        key: 'Systolic',
+                        color: '#673ab7'
+                    },
+                    {
+                        values: diastolics,
+                        key: 'Diastolic',
+                        color: '#03a9f4'
+                    }
+                ];
+                // set y scale to be 10 more than max and min
+                this.bpOptions.chart.yDomain = [Math.min.apply(Math, lowerValues) - 10, Math.max.apply(Math, upperValues) + 10];
+            } else {
+                this.bpReadings.readings = [];
+            }
+        });
     }
 }

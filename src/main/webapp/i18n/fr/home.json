@@ -21,6 +21,15 @@
             "thisWeek": "Points pour la semaine de {{date}} :",
             "thisWeekMobile": "Points :",
             "getMoving": "Pas encore de points cette semaine, mieux venez de vous déplacer !"
+        },
+        "bloodPressure": {
+            "title": "Tension artérielle:",
+            "titleMobile": "TA:",
+            "noReadings": "Aucune mesure de tension artérielle trouvée."
+        },
+        "weight": {
+            "title": "Poids:",
+            "noWeighIns": "Aucune pesée trouvée."
         }
     }
 }

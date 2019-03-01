@@ -37,6 +37,29 @@
                         </ngb-alert>
                     </div>
                 </div>
+                <div class="row mt-4">
+                    <div class="col-6 text-nowrap">
+                        <h4 class="mt-1 d-none d-md-inline" jhiTranslate="home.bloodPressure.title">Blood Pressure:</h4>
+                        <h4 class="mt-1 d-sm-none" jhiTranslate="home.bloodPressure.titleMobile">BP:</h4>
+                    </div>
+                    <div class="col col-md-5 col-xs-5 text-right">
+                        <a [routerLink]="['/blood-pressure/new']" class="btn btn-outline-secondary btn-sm">
+                            <span jhiTranslate="twentyOnePointsApp.bloodPressure.home.createLabel">Add Blood Pressure</span>
+                        </a>
+                    </div>
+                </div>
+                <div class="row mt-1">
+                    <div class="col-md-11 col-xs-12">
+                            <span *ngIf="bpReadings.readings && bpReadings.readings.length">
+                                <nvd3 [options]="bpOptions" [data]="bpData" class="with-3d-shadow with-transitions"></nvd3>
+                            </span>
+                        <ngb-alert [dismissible]="false" [hidden]="bpReadings.readings && bpReadings.readings.length">
+                                <span jhiTranslate="home.bloodPressure.noReadings">
+                                    No blood pressure readings found.
+                                </span>
+                        </ngb-alert>
+                    </div>
+                </div>
                 <div class="row" *ngIf="preference?.id">
                     <p class="mt-2 col-11">
                         <a [routerLink]="['/preference', preference.id, 'edit']"

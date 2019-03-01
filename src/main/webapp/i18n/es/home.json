@@ -21,6 +21,15 @@
             "thisWeek": "Puntos para la semana {{date}}:",
             "thisWeekMobile": "Puntos para {{date}}:",
             "getMoving": "No tenemos datos aun esta semana, mejor a moverse!"
+        },
+        "bloodPressure": {
+            "title": "Presión Sanguínea:",
+            "titleMobile": "PS:",
+            "noReadings": "No se encontraron lecturas de presión sanguínea."
+        },
+        "weight": {
+            "title": "Peso:",
+            "noWeighIns": "No se encontraron entradas de peso."
         }
     }
 }
