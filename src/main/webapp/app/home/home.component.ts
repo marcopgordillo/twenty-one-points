@@ -95,15 +95,16 @@ export class HomeComponent implements OnInit, OnDestroy {
         // Get blood pressure readings for the last 30 days
         this.bloodPressureService.last30Days().subscribe((bpReadings: any) => {
             bpReadings = bpReadings.body;
+
             this.bpReadings = bpReadings;
             this.bpOptions = { ...D3ChartService.getChartConfig() };
+
             if (bpReadings.readings.length) {
                 this.bpOptions.title.text = bpReadings.period;
                 this.bpOptions.chart.yAxis.axisLabel = 'Blood Pressure';
                 const systolics = [];
                 const diastolics = [];
-                const upperValues = [];
-                const lowerValues = [];
+                const totalValues = [];
                 bpReadings.readings.forEach(item => {
                     systolics.push({
                         x: new Date(item.timestamp),
@@ -113,8 +114,8 @@ export class HomeComponent implements OnInit, OnDestroy {
                         x: new Date(item.timestamp),
                         y: item.diastolic
                     });
-                    upperValues.push(item.systolic);
-                    lowerValues.push(item.diastolic);
+                    totalValues.push(item.systolic);
+                    totalValues.push(item.diastolic);
                 });
                 this.bpData = [
                     {
@@ -129,7 +130,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                     }
                 ];
                 // set y scale to be 10 more than max and min
-                this.bpOptions.chart.yDomain = [Math.min.apply(Math, lowerValues) - 10, Math.max.apply(Math, upperValues) + 10];
+                this.bpOptions.chart.yDomain = [Math.min.apply(Math, totalValues) - 10, Math.max.apply(Math, totalValues) + 10];
             } else {
                 this.bpReadings.readings = [];
             }
