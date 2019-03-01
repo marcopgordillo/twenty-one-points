@@ -1,9 +1,10 @@
 package org.jhipster.health.web.rest;
+
+import io.github.jhipster.web.util.ResponseUtil;
 import org.jhipster.health.domain.Preference;
 import org.jhipster.health.service.PreferenceService;
 import org.jhipster.health.web.rest.errors.BadRequestAlertException;
 import org.jhipster.health.web.rest.util.HeaderUtil;
-import io.github.jhipster.web.util.ResponseUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -12,12 +13,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
-
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.StreamSupport;
-
-import static org.elasticsearch.index.query.QueryBuilders.*;
 
 /**
  * REST controller for managing Preference.
@@ -124,6 +121,12 @@ public class PreferenceResource {
     public List<Preference> searchPreferences(@RequestParam String query) {
         log.debug("REST request to search Preferences for query {}", query);
         return preferenceService.search(query);
+    }
+
+    @GetMapping("/my-preference")
+    public ResponseEntity<Preference> getUserPreference() {
+        log.debug("REST request to get Preferences : {}");
+        return ResponseEntity.ok().body(preferenceService.findUserPreference());
     }
 
 }

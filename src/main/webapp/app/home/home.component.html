@@ -8,14 +8,27 @@
 
         <div [ngSwitch]="isAuthenticated()">
             <div class="alert alert-success" *ngSwitchCase="true">
-                <span id="home-logged-message" *ngIf="account" jhiTranslate="home.logged.message"
-                    [translateValues]="{username: account.login}"> You are logged in as user "{{account.login}}". </span>
+                <div class="row">
+                    <div class="col-8">
+                        <h4 jhiTranslate="home.points.thisWeek" class="mt-1 d-none d-md-inline"
+                            [translateValues]="{date: (pointsThisWeek.week | date: 'mediumDate')}">
+                            Points for the week of {{pointsThisWeek.week | date: 'longDate'}}:
+                        </h4>
+                        <h4 jhiTranslate="home.points.thisWeekMobile" class="mt-1 d-sm-none"
+                            [translateValues]="{date: (pointsThisWeek.week | date: 'mediumDate')}">
+                            Points for {{pointsThisWeek.week | date: 'mediumDate'}}:
+                        </h4>
+                    </div>
+                    <div class="col-3 col-xs-2 text-right">
+                        <a [routerLink]="['/point/new']" class="btn btn-primary m-0 mb-1 text-white">Add Points</a>
+                    </div>
+                </div>
                 <div class="row">
                     <div class="col-md-11 col-xs-12">
                         <ngb-progressbar max="21" [value]="pointsThisWeek.points" [striped]="true"
                                          [hidden]="!pointsThisWeek.points">
                                 <span *ngIf="pointsThisWeek.points">
-                                    {{pointsThisWeek.points}} / Goal: 10
+                                    {{pointsThisWeek.points}} / Goal: {{preference.weeklyGoal}}
                                 </span>
                         </ngb-progressbar>
                         <ngb-alert [dismissible]="false" [hidden]="pointsThisWeek.points">
@@ -24,6 +37,19 @@
                         </ngb-alert>
                     </div>
                 </div>
+                <div class="row" *ngIf="preference?.id">
+                    <p class="mt-2 col-11">
+                        <a [routerLink]="['/preference', preference.id, 'edit']"
+                           class="float-right" jhiTranslate="home.link.preferences">Edit Preferences</a>
+                        <!--<a routerLink="history" jhiTranslate="home.link.history">View History</a>-->
+                    </p>
+                </div>
+
+                <p *ngIf="account" class="logged-in-message" jhiTranslate="home.logged.message"
+                   [translateValues]="{username: account.login}">
+                    You are logged in as user "{{account.login}}".
+                </p>
+
             </div>
 
             <div class="alert alert-warning" *ngSwitchCase="false">

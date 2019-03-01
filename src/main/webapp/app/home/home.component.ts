@@ -5,6 +5,8 @@ import { JhiEventManager } from 'ng-jhipster';
 import { Account, AccountService, LoginModalService } from 'app/core';
 import { Subscription } from 'rxjs';
 import { PointService } from 'app/entities/point';
+import { Preference } from 'app/shared/model/preference.model';
+import { PreferenceService } from 'app/entities/preference';
 
 @Component({
     selector: 'jhi-home',
@@ -17,12 +19,14 @@ export class HomeComponent implements OnInit, OnDestroy {
     eventSubscriber: Subscription;
     pointsThisWeek: any = {};
     pointsPercentage: number;
+    preference: Preference;
 
     constructor(
         private accountService: AccountService,
         private loginModalService: LoginModalService,
         private eventManager: JhiEventManager,
-        private pointService: PointService
+        private pointService: PointService,
+        private preferenceService: PreferenceService
     ) {}
 
     ngOnInit() {
@@ -44,6 +48,7 @@ export class HomeComponent implements OnInit, OnDestroy {
             });
         });
         this.eventSubscriber = this.eventManager.subscribe('pointsListModification', () => this.getUserData());
+        this.eventSubscriber = this.eventManager.subscribe('preferenceListModification', () => this.getUserData());
         this.eventSubscriber = this.eventManager.subscribe('bloodPressureListModification', () => this.getUserData());
         this.eventSubscriber = this.eventManager.subscribe('weightListModification', () => this.getUserData());
     }
@@ -57,13 +62,32 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
 
     private getUserData() {
-        // Get points for the current week
+        // Get preferences
+        this.preferenceService.user().subscribe((preference: any) => {
+            this.preference = preference.body;
+
+            // Get points for the current week
+            this.pointService.thisWeek().subscribe((points: any) => {
+                points = points.body;
+                this.pointsThisWeek = points;
+                this.pointsPercentage = (points.points / this.preference.weeklyGoal) * 100;
+
+                // calculate success, warning, or danger
+                if (points.points >= preference.weeklyGoal) {
+                    this.pointsThisWeek.progress = 'success';
+                } else if (points.points < 10) {
+                    this.pointsThisWeek.progress = 'danger';
+                } else if (points.points > 10 && points.points < this.preference.weeklyGoal) {
+                    this.pointsThisWeek.progress = 'warning';
+                }
+            });
+        });
+
+        /* // Get points for the current week
         this.pointService.thisWeek().subscribe((points: any) => {
             points = points.body;
-            console.log('Estos son tus puntos: ');
-            console.log(points);
             this.pointsThisWeek = points;
             this.pointsPercentage = (points.points / 21) * 100;
-        });
+        });*/
     }
 }
