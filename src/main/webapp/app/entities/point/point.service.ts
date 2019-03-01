@@ -79,4 +79,11 @@ export class PointService {
         }
         return res;
     }
+
+    thisWeek(): Observable<EntityResponseType> {
+        const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        return this.http
+            .get(`api/points-this-week?tz=${tz}`, { observe: 'response' })
+            .pipe(map((res: EntityResponseType) => this.convertDateFromServer(res)));
+    }
 }

@@ -7,6 +7,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
+import java.util.List;
+
 /**
  * Spring Data  repository for the Point entity.
  */
@@ -18,4 +21,6 @@ public interface PointRepository extends JpaRepository<Point, Long> {
     Page<Point> findByUserIsCurrentUser(Pageable pageable);
 
     Page<Point> findAllByOrderByDateDesc(Pageable pageable);
+
+    List<Point> findAllByDateBetweenAndUserLogin(LocalDate firstDate, LocalDate secondDate, String login);
 }

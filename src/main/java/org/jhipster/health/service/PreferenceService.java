@@ -49,4 +49,6 @@ public interface PreferenceService {
      * @return the list of entities
      */
     List<Preference> search(String query);
+
+    Preference findUserPreference();
 }

@@ -1,12 +1,12 @@
 package org.jhipster.health.service.impl;
 
-import org.jhipster.health.service.PreferenceService;
 import org.jhipster.health.domain.Preference;
 import org.jhipster.health.repository.PreferenceRepository;
 import org.jhipster.health.repository.search.PreferenceSearchRepository;
+import org.jhipster.health.security.SecurityUtils;
+import org.jhipster.health.service.PreferenceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,7 +15,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-import static org.elasticsearch.index.query.QueryBuilders.*;
+import static org.elasticsearch.index.query.QueryBuilders.queryStringQuery;
 
 /**
  * Service Implementation for managing Preference.
@@ -100,5 +100,17 @@ public class PreferenceServiceImpl implements PreferenceService {
         return StreamSupport
             .stream(preferenceSearchRepository.search(queryStringQuery(query)).spliterator(), false)
             .collect(Collectors.toList());
+    }
+
+    @Override
+    public Preference findUserPreference() {
+        String username = SecurityUtils.getCurrentUserLogin().orElse(null);
+
+        Optional<Preference> preference = preferenceRepository.findOneByUserLogin(username);
+
+        Preference defaultPreference = new Preference();
+        defaultPreference.setWeeklyGoal(10);
+
+        return preference.orElse(defaultPreference);
     }
 }
