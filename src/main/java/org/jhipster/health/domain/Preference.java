@@ -1,18 +1,17 @@
 package org.jhipster.health.domain;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.jhipster.health.domain.enumeration.Unit;
+import org.springframework.data.elasticsearch.annotations.Document;
 
 import javax.persistence.*;
-import javax.validation.constraints.*;
-
-import org.springframework.data.elasticsearch.annotations.Document;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Objects;
-
-import org.jhipster.health.domain.enumeration.Unit;
 
 /**
  * A Preference.
@@ -41,7 +40,7 @@ public class Preference implements Serializable {
     private Unit weightUnits;
 
     @OneToOne
-    @JsonIgnoreProperties("preferences")
+    @JoinColumn(unique = true)
     private User user;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove

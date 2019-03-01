@@ -15,7 +15,7 @@
         {
             "fieldName": "weightUnits",
             "fieldType": "Unit",
-            "fieldValues": "Kg,Lb"
+            "fieldValues": "Kg,lb"
         }
     ],
     "relationships": [
