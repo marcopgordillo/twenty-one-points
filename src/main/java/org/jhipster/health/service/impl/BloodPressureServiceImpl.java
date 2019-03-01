@@ -16,8 +16,6 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.elasticsearch.index.query.QueryBuilders.queryStringQuery;
 
@@ -107,17 +105,10 @@ public class BloodPressureServiceImpl implements BloodPressureService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<BloodPressure> findByDays(int days) {
+    public List<BloodPressure> findByDaysCurrentUser(int days) {
         ZonedDateTime rightNow = ZonedDateTime.now(ZoneOffset.UTC);
         ZonedDateTime daysAgo = rightNow.minusDays(days);
 
-        List<BloodPressure> readings = bloodPressureRepository.findAllByTimestampBetweenOrderByTimestampDesc(daysAgo, rightNow);
-        return filterByUser(readings);
-    }
-
-    private List<BloodPressure> filterByUser(List<BloodPressure> readings) {
-        Stream<BloodPressure> userReadings = readings.stream()
-            .filter(bp -> bp.getUser().getLogin().equals(SecurityUtils.getCurrentUserLogin().orElse(null)));
-        return userReadings.collect(Collectors.toList());
+        return bloodPressureRepository.findAllByTimestampBetweenAndUserLoginOrderByTimestampDesc(daysAgo, rightNow, SecurityUtils.getCurrentUserLogin().orElse(null));
     }
 }

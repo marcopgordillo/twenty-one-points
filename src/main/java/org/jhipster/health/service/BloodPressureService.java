@@ -54,5 +54,5 @@ public interface BloodPressureService {
      */
     Page<BloodPressure> search(String query, Pageable pageable);
 
-    List<BloodPressure> findByDays(int days);
+    List<BloodPressure> findByDaysCurrentUser(int days);
 }

@@ -20,4 +20,7 @@ public interface BloodPressureRepository extends JpaRepository<BloodPressure, Lo
 
     List<BloodPressure> findAllByTimestampBetweenOrderByTimestampDesc(ZonedDateTime firstDate, ZonedDateTime secondDate);
 
+    List<BloodPressure> findAllByTimestampBetweenAndUserLoginOrderByTimestampDesc(
+        ZonedDateTime firstDate, ZonedDateTime secondDate, String login);
+
 }

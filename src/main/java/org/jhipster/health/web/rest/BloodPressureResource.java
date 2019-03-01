@@ -141,7 +141,7 @@ public class BloodPressureResource {
     @RequestMapping(value = "/bp-by-days/{days}")
     @Timed
     public ResponseEntity<BloodPressureByPeriod> getByDays(@PathVariable int days) {
-        BloodPressureByPeriod response = new BloodPressureByPeriod("Last " + days + " Days", bloodPressureService.findByDays(days));
+        BloodPressureByPeriod response = new BloodPressureByPeriod("Last " + days + " Days", bloodPressureService.findByDaysCurrentUser(days));
         return ResponseEntity.ok(response);
     }
 }
