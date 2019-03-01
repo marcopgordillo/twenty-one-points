@@ -3,7 +3,7 @@
         "Unit": {
             "null": "",
             "Kg": "Kg",
-            "Lb": "Lb"
+            "lb": "lb"
         }
     }
 }

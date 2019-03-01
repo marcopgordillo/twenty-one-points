@@ -29,7 +29,10 @@ enum Unit {
 relationship ManyToOne {
   Point{user(login)} to User,
   Weight{user(login)} to User,
-  BloodPressure{user(login)} to User,
+  BloodPressure{user(login)} to User
+}
+
+relationship OneToOne {
   Preference{user(login)} to User
 }
 

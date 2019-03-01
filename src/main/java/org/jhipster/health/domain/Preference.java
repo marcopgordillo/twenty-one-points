@@ -40,7 +40,7 @@ public class Preference implements Serializable {
     @Column(name = "weight_units")
     private Unit weightUnits;
 
-    @ManyToOne
+    @OneToOne
     @JsonIgnoreProperties("preferences")
     private User user;
 
