@@ -1,13 +1,12 @@
 package org.jhipster.health.web.rest;
 
 import org.jhipster.health.TwentyOnePointsApp;
-
 import org.jhipster.health.domain.Point;
 import org.jhipster.health.repository.PointRepository;
+import org.jhipster.health.repository.UserRepository;
 import org.jhipster.health.repository.search.PointSearchRepository;
 import org.jhipster.health.service.PointService;
 import org.jhipster.health.web.rest.errors.ExceptionTranslator;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,7 +22,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.Validator;
+import org.springframework.web.context.WebApplicationContext;
 
 import javax.persistence.EntityManager;
 import java.time.LocalDate;
@@ -31,12 +30,13 @@ import java.time.ZoneId;
 import java.util.Collections;
 import java.util.List;
 
-
-import static org.jhipster.health.web.rest.TestUtil.createFormattingConversionService;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.elasticsearch.index.query.QueryBuilders.queryStringQuery;
 import static org.hamcrest.Matchers.hasItem;
+import static org.jhipster.health.web.rest.TestUtil.createFormattingConversionService;
 import static org.mockito.Mockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -65,6 +65,12 @@ public class PointResourceIntTest {
     private static final String UPDATED_NOTES = "BBBBBBBBBB";
 
     @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private WebApplicationContext context;
+
+    @Autowired
     private PointRepository pointRepository;
 
     @Autowired
@@ -90,9 +96,6 @@ public class PointResourceIntTest {
     @Autowired
     private EntityManager em;
 
-    @Autowired
-    private Validator validator;
-
     private MockMvc restPointMockMvc;
 
     private Point point;
@@ -100,13 +103,13 @@ public class PointResourceIntTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        final PointResource pointResource = new PointResource(pointService);
+        final PointResource pointResource = new PointResource(pointService, userRepository, mockPointSearchRepository);
         this.restPointMockMvc = MockMvcBuilders.standaloneSetup(pointResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)
             .setControllerAdvice(exceptionTranslator)
             .setConversionService(createFormattingConversionService())
             .setMessageConverters(jacksonMessageConverter)
-            .setValidator(validator).build();
+            .build();
     }
 
     /**
@@ -135,8 +138,15 @@ public class PointResourceIntTest {
     public void createPoint() throws Exception {
         int databaseSizeBeforeCreate = pointRepository.findAll().size();
 
+        // Create security-aware mockMvc
+        restPointMockMvc = MockMvcBuilders
+                    .webAppContextSetup(context)
+                    .apply(springSecurity())
+                    .build();
+
         // Create the Point
         restPointMockMvc.perform(post("/api/points")
+            .with(user("user"))
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
             .content(TestUtil.convertObjectToJsonBytes(point)))
             .andExpect(status().isCreated());
@@ -201,8 +211,17 @@ public class PointResourceIntTest {
         // Initialize the database
         pointRepository.saveAndFlush(point);
 
+        // Create security-aware mockMvc
+        restPointMockMvc = MockMvcBuilders
+                .webAppContextSetup(context)
+                .apply(springSecurity())
+                .build();
+
         // Get all the pointList
-        restPointMockMvc.perform(get("/api/points?sort=id,desc"))
+        restPointMockMvc.perform(get("/api/points?sort=id,desc")
+                                    .with(user("admin")
+                                    .roles("ADMIN")))
+            .andExpect(status().isOk())
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(point.getId().intValue())))
