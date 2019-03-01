@@ -2,11 +2,13 @@
 Main page styles
 ========================================================================== */
 
+@import '~nvd3/build/nv.d3.css';
+
 .hipster {
     display: inline-block;
     width: 347px;
     height: 497px;
-    background: url('../../content/images/jhipster_family_member_0.svg') no-repeat center top;
+    background: url('../../content/images/21-points-logo.png') no-repeat center top;
     background-size: contain;
 }
 
@@ -17,7 +19,7 @@ Main page styles
     only screen and (min-resolution: 192dpi),
     only screen and (min-resolution: 2dppx) {
     .hipster {
-        background: url('../../content/images/jhipster_family_member_0.svg') no-repeat center top;
+        background: url('../../content/images/21-points-logo2x.png') no-repeat center top;
         background-size: contain;
     }
 }

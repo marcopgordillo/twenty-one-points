@@ -4,11 +4,10 @@ package org.jhipster.health.domain;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.springframework.data.elasticsearch.annotations.Document;
 
 import javax.persistence.*;
-import javax.validation.constraints.*;
-
-import org.springframework.data.elasticsearch.annotations.Document;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.ZonedDateTime;
 import java.util.Objects;
@@ -44,6 +43,16 @@ public class BloodPressure implements Serializable {
     @ManyToOne
     @JsonIgnoreProperties("bloodPressures")
     private User user;
+
+    public BloodPressure() {
+    }
+
+    public BloodPressure(ZonedDateTime timestamp, int systolic, int diastolic, User user) {
+        this.timestamp = timestamp;
+        this.systolic = systolic;
+        this.diastolic = diastolic;
+        this.user = user;
+    }
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
     public Long getId() {
