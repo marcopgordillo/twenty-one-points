@@ -1,0 +1,27 @@
+{
+    "twentyOnePointsApp": {
+        "point": {
+            "home": {
+                "title": "Points",
+                "createLabel": "Créer un nouveau Point",
+                "createOrEditLabel": "Créer ou éditer un Point",
+                "search": "Recherche pour Point"
+            },
+            "created": "Un nouveau Point a été créé avec l'identifiant {{ param }}",
+            "updated": "Le Point avec l'identifiant {{ param }} a été mis à jour",
+            "deleted": "Le Point avec l'identifiant {{ param }} a été supprimé",
+            "delete": {
+                "question": "Etes-vous certain de vouloir supprimer le Point {{ id }} ?"
+            },
+            "detail": {
+                "title": "Point"
+            },
+            "date": "Date",
+            "exercise": "Exercise",
+            "meals": "Meals",
+            "alcohol": "Alcohol",
+            "notes": "Notes",
+            "user": "User"
+        }
+    }
+}

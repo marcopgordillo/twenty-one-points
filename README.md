@@ -1,5 +1,7 @@
 # TwentyOnePoints
 
+Release 0.1
+
 This application was generated using JHipster 5.8.1, you can find documentation and help at [https://www.jhipster.tech/documentation-archive/v5.8.1](https://www.jhipster.tech/documentation-archive/v5.8.1).
 
 ## Development

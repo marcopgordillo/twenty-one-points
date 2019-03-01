@@ -1,0 +1,24 @@
+{
+    "twentyOnePointsApp": {
+        "preference": {
+            "home": {
+                "title": "Preferences",
+                "createLabel": "Créer un nouveau Preference",
+                "createOrEditLabel": "Créer ou éditer un Preference",
+                "search": "Recherche pour Preference"
+            },
+            "created": "Un nouveau Preference a été créé avec l'identifiant {{ param }}",
+            "updated": "Le Preference avec l'identifiant {{ param }} a été mis à jour",
+            "deleted": "Le Preference avec l'identifiant {{ param }} a été supprimé",
+            "delete": {
+                "question": "Etes-vous certain de vouloir supprimer le Preference {{ id }} ?"
+            },
+            "detail": {
+                "title": "Preference"
+            },
+            "weeklyGoal": "Weekly Goal",
+            "weightUnits": "Weight Units",
+            "user": "User"
+        }
+    }
+}
