@@ -56,7 +56,7 @@ spring:
         password: ${SENDGRID_PASSWORD}
         protocol: smtp
         properties:
-            tls: false
+            tls: true
             auth: true
     thymeleaf:
         cache: true
