@@ -1,3 +1,5 @@
+[![Quality Gate](http://localhost:9001/api/project_badges/measure?project=org.jhipster.health%3Atwenty-one-points&metric=alert_status)](http://localhost:9001/api/project_badges/measure?project=org.jhipster.health%3Atwenty-one-points&metric=alert_status)
+
 # TwentyOnePoints
 
 Release 1.0.2
