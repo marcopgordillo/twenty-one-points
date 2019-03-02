@@ -110,7 +110,7 @@ public class PointResourceIntTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        final PointResource pointResource = new PointResource(pointService, userRepository, mockPointSearchRepository);
+        final PointResource pointResource = new PointResource(pointService, userRepository);
         this.restPointMockMvc = MockMvcBuilders.standaloneSetup(pointResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)
             .setControllerAdvice(exceptionTranslator)
@@ -424,6 +424,6 @@ public class PointResourceIntTest {
             .andExpect(status().isOk())
             .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.week").value(thisMonday.toString()))
-            .andExpect(jsonPath("$.points").value(5));
+            .andExpect(jsonPath("$.points").value(8));
     }
 }
