@@ -1,28 +1,26 @@
 package org.jhipster.health.web.rest;
+
+import io.github.jhipster.web.util.ResponseUtil;
+import io.micrometer.core.annotation.Timed;
 import org.jhipster.health.domain.BloodPressure;
 import org.jhipster.health.service.BloodPressureService;
 import org.jhipster.health.web.rest.errors.BadRequestAlertException;
 import org.jhipster.health.web.rest.util.HeaderUtil;
 import org.jhipster.health.web.rest.util.PaginationUtil;
-import io.github.jhipster.web.util.ResponseUtil;
+import org.jhipster.health.web.rest.vm.BloodPressureByPeriod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
-
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.StreamSupport;
-
-import static org.elasticsearch.index.query.QueryBuilders.*;
 
 /**
  * REST controller for managing BloodPressure.
@@ -137,4 +135,13 @@ public class BloodPressureResource {
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
 
+    /**
+     * GET  /bp-by-days : get all the blood pressure readings by last x days.
+     */
+    @RequestMapping(value = "/bp-by-days/{days}")
+    @Timed
+    public ResponseEntity<BloodPressureByPeriod> getByDays(@PathVariable int days) {
+        BloodPressureByPeriod response = new BloodPressureByPeriod("Last " + days + " Days", bloodPressureService.findByDaysCurrentUser(days));
+        return ResponseEntity.ok(response);
+    }
 }

@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import * as moment from 'moment';
-import { DATE_FORMAT } from 'app/shared/constants/input.constants';
 import { map } from 'rxjs/operators';
 
 import { SERVER_API_URL } from 'app/app.constants';
@@ -78,5 +77,11 @@ export class BloodPressureService {
             });
         }
         return res;
+    }
+
+    last30Days(): Observable<EntityResponseType> {
+        return this.http
+            .get(SERVER_API_URL + 'api/bp-by-days/30', { observe: 'response' })
+            .pipe(map((res: EntityResponseType) => this.convertDateFromServer(res)));
     }
 }

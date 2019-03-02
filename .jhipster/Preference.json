@@ -15,12 +15,12 @@
         {
             "fieldName": "weightUnits",
             "fieldType": "Unit",
-            "fieldValues": "Kg,Lb"
+            "fieldValues": "Kg,lb"
         }
     ],
     "relationships": [
         {
-            "relationshipType": "many-to-one",
+            "relationshipType": "one-to-one",
             "otherEntityName": "user",
             "otherEntityRelationshipName": "preference",
             "relationshipName": "user",

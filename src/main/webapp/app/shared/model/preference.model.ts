@@ -2,7 +2,7 @@ import { IUser } from 'app/core/user/user.model';
 
 export const enum Unit {
     Kg = 'Kg',
-    Lb = 'Lb'
+    lb = 'lb'
 }
 
 export interface IPreference {

@@ -1,13 +1,12 @@
 package org.jhipster.health.web.rest;
 
 import org.jhipster.health.TwentyOnePointsApp;
-
 import org.jhipster.health.domain.Preference;
+import org.jhipster.health.domain.enumeration.Unit;
 import org.jhipster.health.repository.PreferenceRepository;
 import org.jhipster.health.repository.search.PreferenceSearchRepository;
 import org.jhipster.health.service.PreferenceService;
 import org.jhipster.health.web.rest.errors.ExceptionTranslator;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,16 +26,13 @@ import javax.persistence.EntityManager;
 import java.util.Collections;
 import java.util.List;
 
-
-import static org.jhipster.health.web.rest.TestUtil.createFormattingConversionService;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.elasticsearch.index.query.QueryBuilders.queryStringQuery;
 import static org.hamcrest.Matchers.hasItem;
+import static org.jhipster.health.web.rest.TestUtil.createFormattingConversionService;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
-import org.jhipster.health.domain.enumeration.Unit;
 /**
  * Test class for the PreferenceResource REST controller.
  *
@@ -50,7 +46,7 @@ public class PreferenceResourceIntTest {
     private static final Integer UPDATED_WEEKLY_GOAL = 11;
 
     private static final Unit DEFAULT_WEIGHT_UNITS = Unit.Kg;
-    private static final Unit UPDATED_WEIGHT_UNITS = Unit.Lb;
+    private static final Unit UPDATED_WEIGHT_UNITS = Unit.lb;
 
     @Autowired
     private PreferenceRepository preferenceRepository;

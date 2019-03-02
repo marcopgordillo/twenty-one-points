@@ -1,9 +1,11 @@
 {
     "home": {
-        "title": "¡Bienvenido, Java Hipster!",
-        "subtitle": "Esta es su página de inicio",
+        "title": "21 Puntos a la salud",
+        "welcome": "Bienvenido!",
+        "welcomeWithName": "Bienvenido, {{name}}!",
+        "subtitle": "21-Points Health es donde se puede rastrear tu salud y mejorar tu vida. \uD83D\uDE0A",
         "logged": {
-            "message": "Está conectado como \"{{username}}\"."
+            "message": "Está conectado como <em>\"{{username}}\"</em>."
         },
         "question": "Si tiene preguntas sobre JHipster:",
         "link": {
@@ -21,6 +23,15 @@
             "thisWeek": "Puntos para la semana {{date}}:",
             "thisWeekMobile": "Puntos para {{date}}:",
             "getMoving": "No tenemos datos aun esta semana, mejor a moverse!"
+        },
+        "bloodPressure": {
+            "title": "Presión Sanguínea:",
+            "titleMobile": "PS:",
+            "noReadings": "No se encontraron lecturas de presión sanguínea."
+        },
+        "weight": {
+            "title": "Peso:",
+            "noWeighIns": "No se encontraron entradas de peso."
         }
     }
 }
