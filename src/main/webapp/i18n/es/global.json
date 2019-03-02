@@ -1,11 +1,11 @@
 {
     "global": {
-        "title": "TwentyOnePoints",
+        "title": "21-Points Health",
         "browsehappy": "Está usando un navegador <strong>no actualizado</strong>. Por favor, <a href=\"http://browsehappy.com/?locale=en\">actualice su navegador</a> para mejorar su experiencia.",
         "menu": {
             "home": "Inicio",
-            "about": "About",
-            "history": "History",
+            "about": "Sobre Nosotros",
+            "history": "Historico",
             "jhipster-needle-menu-add-element": "JHipster will add additional menu entries here (do not translate!)",
             "entities": {
                 "main": "Entidades",
