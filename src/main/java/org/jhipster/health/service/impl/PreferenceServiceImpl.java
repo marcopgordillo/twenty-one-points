@@ -103,6 +103,7 @@ public class PreferenceServiceImpl implements PreferenceService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Preference findUserPreference() {
         String username = SecurityUtils.getCurrentUserLogin().orElse(null);
 
@@ -112,5 +113,11 @@ public class PreferenceServiceImpl implements PreferenceService {
         defaultPreference.setWeeklyGoal(10);
 
         return preference.orElse(defaultPreference);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Preference> findByUserIsCurrentUser() {
+        return preferenceRepository.findByUserIsCurrentUser();
     }
 }

@@ -19,5 +19,4 @@ public interface PreferenceRepository extends JpaRepository<Preference, Long> {
     List<Preference> findByUserIsCurrentUser();
 
     Optional<Preference> findOneByUserLogin(String login);
-
 }

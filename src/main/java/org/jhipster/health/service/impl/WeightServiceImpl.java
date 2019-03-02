@@ -126,6 +126,18 @@ public class WeightServiceImpl implements WeightService {
         return weighIns;
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public Page<Weight> findAllByOrderByDateDesc(Pageable pageable) {
+        return weightRepository.findAllByOrderByTimestampDesc(pageable);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<Weight> findByUserIsCurrentUser(Pageable pageable) {
+        return weightRepository.findByUserIsCurrentUser(pageable);
+    }
+
     /*private List<Weight> filterByUser(List<Weight> readings) {
         Stream<Weight> userReadings = readings.stream()
             .filter(bp -> bp.getUser().getLogin().equals(SecurityUtils.getCurrentUserLogin().orElse(null)));
