@@ -33,6 +33,8 @@
         "otherModules": [],
         "enableTranslation": true,
         "nativeLanguage": "en",
-        "languages": ["en", "fr", "es"]
+        "languages": ["en", "fr", "es"],
+        "herokuAppName": "twenty-one-points-myhealth",
+        "herokuDeployType": "git"
     }
 }
