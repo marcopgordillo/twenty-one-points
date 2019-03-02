@@ -63,6 +63,28 @@
                         </ngb-alert>
                     </div>
                 </div>
+                <div class="row mt-4">
+                    <div class="col-6">
+                        <h4 jhiTranslate="home.weight.title">Weight:</h4>
+                    </div>
+                    <div class="col col-md-5 col-xs-5 text-right">
+                        <a [routerLink]="['/weight/new']" class="btn btn-outline-secondary btn-sm">
+                            <span jhiTranslate="twentyOnePointsApp.weight.home.createLabel">Add Weight</span>
+                        </a>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-11 col-xs-12">
+                            <span *ngIf="weights.weighIns && weights.weighIns.length">
+                                <nvd3 [options]="weightOptions" [data]="weightData" class="with-3d-shadow with-transitions"></nvd3>
+                            </span>
+                        <ngb-alert [dismissible]="false" [hidden]="weights.weighIns && weights.weighIns.length">
+                                <span jhiTranslate="home.weight.noWeighIns">
+                                    No weigh-ins found.
+                                </span>
+                        </ngb-alert>
+                    </div>
+                </div>
                 <div class="row" *ngIf="preference?.id">
                     <p class="mt-2 col-11">
                         <a [routerLink]="['/preference', preference.id, 'edit']"
