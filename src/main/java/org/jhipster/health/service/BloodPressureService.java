@@ -58,4 +58,8 @@ public interface BloodPressureService {
     List<BloodPressure> findByDaysCurrentUser(int days);
 
     List<BloodPressure> findBpByMonth(YearMonth date);
+
+    Page<BloodPressure> findAllByOrderByDateDesc(Pageable pageable);
+
+    Page<BloodPressure> findByUserIsCurrentUser(Pageable pageable);
 }

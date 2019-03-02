@@ -109,7 +109,7 @@ public class WeightResourceIntTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        final WeightResource weightResource = new WeightResource(weightService);
+        final WeightResource weightResource = new WeightResource(weightService, userRepository);
         this.restWeightMockMvc = MockMvcBuilders.standaloneSetup(weightResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)
             .setControllerAdvice(exceptionTranslator)
@@ -141,8 +141,16 @@ public class WeightResourceIntTest {
     public void createWeight() throws Exception {
         int databaseSizeBeforeCreate = weightRepository.findAll().size();
 
+        // Create security-aware mockMvc
+        restWeightMockMvc = MockMvcBuilders
+            .webAppContextSetup(context)
+            .apply(springSecurity())
+            .build();
+
+
         // Create the Weight
         restWeightMockMvc.perform(post("/api/weights")
+            .with(user("user"))
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
             .content(TestUtil.convertObjectToJsonBytes(weight)))
             .andExpect(status().isCreated());
@@ -222,8 +230,16 @@ public class WeightResourceIntTest {
         // Initialize the database
         weightRepository.saveAndFlush(weight);
 
+        // Create security-aware mockMvc
+        restWeightMockMvc = MockMvcBuilders
+            .webAppContextSetup(context)
+            .apply(springSecurity())
+            .build();
+
+
         // Get all the weightList
-        restWeightMockMvc.perform(get("/api/weights?sort=id,desc"))
+        restWeightMockMvc.perform(get("/api/weights?sort=id,desc")
+            .with(user("admin").roles("ADMIN")))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(weight.getId().intValue())))

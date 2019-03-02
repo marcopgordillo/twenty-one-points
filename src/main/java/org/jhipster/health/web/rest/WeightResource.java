@@ -3,6 +3,9 @@ package org.jhipster.health.web.rest;
 import io.github.jhipster.web.util.ResponseUtil;
 import io.micrometer.core.annotation.Timed;
 import org.jhipster.health.domain.Weight;
+import org.jhipster.health.repository.UserRepository;
+import org.jhipster.health.security.AuthoritiesConstants;
+import org.jhipster.health.security.SecurityUtils;
 import org.jhipster.health.service.WeightService;
 import org.jhipster.health.web.rest.errors.BadRequestAlertException;
 import org.jhipster.health.web.rest.util.HeaderUtil;
@@ -38,9 +41,11 @@ public class WeightResource {
     private static final String ENTITY_NAME = "weight";
 
     private final WeightService weightService;
+    private final UserRepository userRepository;
 
-    public WeightResource(WeightService weightService) {
+    public WeightResource(WeightService weightService, UserRepository userRepository) {
         this.weightService = weightService;
+        this.userRepository = userRepository;
     }
 
     /**
@@ -56,6 +61,12 @@ public class WeightResource {
         if (weight.getId() != null) {
             throw new BadRequestAlertException("A new weight cannot already have an ID", ENTITY_NAME, "idexists");
         }
+
+        if (!SecurityUtils.isCurrentUserInRole(AuthoritiesConstants.ADMIN)) {
+            log.debug("No user passed in, using current user: {}", SecurityUtils.getCurrentUserLogin());
+            weight.setUser(userRepository.findOneByLogin(SecurityUtils.getCurrentUserLogin().orElse(null)).orElse(null));
+        }
+
         Weight result = weightService.save(weight);
         return ResponseEntity.created(new URI("/api/weights/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
@@ -92,7 +103,15 @@ public class WeightResource {
     @GetMapping("/weights")
     public ResponseEntity<List<Weight>> getAllWeights(Pageable pageable) {
         log.debug("REST request to get a page of Weights");
-        Page<Weight> page = weightService.findAll(pageable);
+
+        Page<Weight> page;
+
+        if (SecurityUtils.isCurrentUserInRole(AuthoritiesConstants.ADMIN)) {
+            page = weightService.findAllByOrderByDateDesc(pageable);
+        } else {
+            page = weightService.findByUserIsCurrentUser(pageable);
+        }
+
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/weights");
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }

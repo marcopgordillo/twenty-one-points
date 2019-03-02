@@ -123,4 +123,16 @@ public class BloodPressureServiceImpl implements BloodPressureService {
 
         return bloodPressureRepository.findAllByTimestampBetweenAndUserLoginOrderByTimestampDesc(firstDay.atStartOfDay(zonedDateTime.getZone()),lastDay.plusDays(1).atStartOfDay(zonedDateTime.getZone()), SecurityUtils.getCurrentUserLogin().orElse(null));
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<BloodPressure> findAllByOrderByDateDesc(Pageable pageable) {
+        return bloodPressureRepository.findAllByOrderByTimestampDesc(pageable);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<BloodPressure> findByUserIsCurrentUser(Pageable pageable) {
+        return bloodPressureRepository.findByUserIsCurrentUser(pageable);
+    }
 }
