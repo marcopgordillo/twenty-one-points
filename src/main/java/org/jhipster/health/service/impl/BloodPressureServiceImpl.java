@@ -12,6 +12,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.YearMonth;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -110,5 +112,15 @@ public class BloodPressureServiceImpl implements BloodPressureService {
         ZonedDateTime daysAgo = rightNow.minusDays(days);
 
         return bloodPressureRepository.findAllByTimestampBetweenAndUserLoginOrderByTimestampDesc(daysAgo, rightNow, SecurityUtils.getCurrentUserLogin().orElse(null));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<BloodPressure> findBpByMonth(YearMonth date) {
+        LocalDate firstDay = date.atDay(1);
+        LocalDate lastDay = date.atEndOfMonth();
+        ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneOffset.UTC);
+
+        return bloodPressureRepository.findAllByTimestampBetweenAndUserLoginOrderByTimestampDesc(firstDay.atStartOfDay(zonedDateTime.getZone()),lastDay.plusDays(1).atStartOfDay(zonedDateTime.getZone()), SecurityUtils.getCurrentUserLogin().orElse(null));
     }
 }

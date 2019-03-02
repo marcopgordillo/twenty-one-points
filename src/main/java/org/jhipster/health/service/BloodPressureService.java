@@ -4,6 +4,7 @@ import org.jhipster.health.domain.BloodPressure;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.time.YearMonth;
 import java.util.List;
 import java.util.Optional;
 
@@ -55,4 +56,6 @@ public interface BloodPressureService {
     Page<BloodPressure> search(String query, Pageable pageable);
 
     List<BloodPressure> findByDaysCurrentUser(int days);
+
+    List<BloodPressure> findBpByMonth(YearMonth date);
 }

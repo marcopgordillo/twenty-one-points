@@ -1,10 +1,13 @@
 package org.jhipster.health.service;
 
 import org.jhipster.health.domain.Point;
+import org.jhipster.health.web.rest.vm.PointsPerMonth;
+import org.jhipster.health.web.rest.vm.PointsPerWeek;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
 import java.util.Optional;
 
@@ -60,4 +63,10 @@ public interface PointService {
     Page<Point> findByUserIsCurrentUser(Pageable pageable);
 
     List<Point> findAllByDateBetweenAndUserLogin(LocalDate startOfWeek, LocalDate endOfWeek, String currentUserLogin);
+
+    PointsPerMonth findPointsByMonth(YearMonth yearWithMonth);
+
+    PointsPerWeek findPointsThisWeek(String timezone);
+
+    PointsPerWeek findPointsByWeek(LocalDate date);
 }

@@ -82,7 +82,9 @@
                     "minlength": "Se requiere que su correo electrónico tenga por lo menos 5 caracteres",
                     "maxlength": "Su correo electrónico no puede tener más de 50 caracteres"
                 }
-            }
+            },
+            "hide": "Hide",
+            "show": "Show"
         },
         "field": {
             "id": "ID"

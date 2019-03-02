@@ -82,7 +82,9 @@
                     "maxlength": "Votre email ne doit pas comporter plus de 50 caractères.",
                     "invalid": "Votre email n'est pas valide."
                 }
-            }
+            },
+            "hide": "Cacher",
+            "show": "Montrer"
         },
         "field": {
             "id": "ID"

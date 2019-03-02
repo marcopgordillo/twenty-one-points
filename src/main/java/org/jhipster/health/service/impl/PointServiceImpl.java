@@ -3,7 +3,10 @@ package org.jhipster.health.service.impl;
 import org.jhipster.health.domain.Point;
 import org.jhipster.health.repository.PointRepository;
 import org.jhipster.health.repository.search.PointSearchRepository;
+import org.jhipster.health.security.SecurityUtils;
 import org.jhipster.health.service.PointService;
+import org.jhipster.health.web.rest.vm.PointsPerMonth;
+import org.jhipster.health.web.rest.vm.PointsPerWeek;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -11,7 +14,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.YearMonth;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 
@@ -102,17 +108,70 @@ public class PointServiceImpl implements PointService {
         return pointSearchRepository.search(queryStringQuery(query), pageable);    }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<Point> findAllByOrderByDateDesc(Pageable pageable) {
         return pointRepository.findAllByOrderByDateDesc(pageable);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<Point> findByUserIsCurrentUser(Pageable pageable) {
         return pointRepository.findByUserIsCurrentUser(pageable);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Point> findAllByDateBetweenAndUserLogin(LocalDate startOfWeek, LocalDate endOfWeek, String currentUserLogin) {
         return pointRepository.findAllByDateBetweenAndUserLogin(startOfWeek, endOfWeek, currentUserLogin);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public PointsPerMonth findPointsByMonth(YearMonth yearWithMonth) {
+        // Get last day of the month
+        LocalDate endOfMonth = yearWithMonth.atEndOfMonth();
+
+        List<Point> points = pointRepository.findAllByDateBetweenAndUserLogin(yearWithMonth.atDay(1), endOfMonth, SecurityUtils.getCurrentUserLogin().orElse(null));
+
+        return new PointsPerMonth(yearWithMonth, points);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public PointsPerWeek findPointsThisWeek(String timezone) {
+        // Get current date (with timezone if passed in)
+        LocalDate now = LocalDate.now();
+        if (timezone != null) {
+            now = LocalDate.now(ZoneId.of(timezone));
+        }
+
+        // Get first day of week
+        LocalDate startOfWeek = now.with(DayOfWeek.MONDAY);
+        // Get last day of week
+        LocalDate endOfWeek = now.with(DayOfWeek.SUNDAY);
+        log.debug("Looking for points between: {} and {}", startOfWeek, endOfWeek);
+
+        List<Point> points = findAllByDateBetweenAndUserLogin(startOfWeek, endOfWeek, SecurityUtils.getCurrentUserLogin().orElse(null));
+
+        return calculatePoints(startOfWeek, points);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public PointsPerWeek findPointsByWeek(LocalDate date) {
+        // Get first and last days of week
+        LocalDate startOfWeek = date.with(DayOfWeek.MONDAY);
+        LocalDate endOfWeek = date.with(DayOfWeek.SUNDAY);
+        List<Point> points = pointRepository.findAllByDateBetweenAndUserLogin(startOfWeek, endOfWeek, SecurityUtils.getCurrentUserLogin().orElse(null));
+
+        return calculatePoints(startOfWeek, points);
+    }
+
+    private PointsPerWeek calculatePoints(LocalDate startOfWeek, List<Point> points) {
+        Integer numPoints = points.stream()
+            .mapToInt(p -> p.getExercise() + p.getMeals() + p.getAlcohol())
+            .sum();
+
+        return new PointsPerWeek(startOfWeek, numPoints);
     }
 }
