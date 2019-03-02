@@ -3,6 +3,9 @@ package org.jhipster.health.web.rest;
 import io.github.jhipster.web.util.ResponseUtil;
 import io.micrometer.core.annotation.Timed;
 import org.jhipster.health.domain.BloodPressure;
+import org.jhipster.health.repository.UserRepository;
+import org.jhipster.health.security.AuthoritiesConstants;
+import org.jhipster.health.security.SecurityUtils;
 import org.jhipster.health.service.BloodPressureService;
 import org.jhipster.health.web.rest.errors.BadRequestAlertException;
 import org.jhipster.health.web.rest.util.HeaderUtil;
@@ -38,9 +41,11 @@ public class BloodPressureResource {
     private static final String ENTITY_NAME = "bloodPressure";
 
     private final BloodPressureService bloodPressureService;
+    private final UserRepository userRepository;
 
-    public BloodPressureResource(BloodPressureService bloodPressureService) {
+    public BloodPressureResource(BloodPressureService bloodPressureService, UserRepository userRepository) {
         this.bloodPressureService = bloodPressureService;
+        this.userRepository = userRepository;
     }
 
     /**
@@ -56,6 +61,12 @@ public class BloodPressureResource {
         if (bloodPressure.getId() != null) {
             throw new BadRequestAlertException("A new bloodPressure cannot already have an ID", ENTITY_NAME, "idexists");
         }
+
+        if (!SecurityUtils.isCurrentUserInRole(AuthoritiesConstants.ADMIN)) {
+            log.debug("No user passed in, using current user: {}", SecurityUtils.getCurrentUserLogin());
+            bloodPressure.setUser(userRepository.findOneByLogin(SecurityUtils.getCurrentUserLogin().orElse(null)).orElse(null));
+        }
+
         BloodPressure result = bloodPressureService.save(bloodPressure);
         return ResponseEntity.created(new URI("/api/blood-pressures/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
@@ -92,7 +103,15 @@ public class BloodPressureResource {
     @GetMapping("/blood-pressures")
     public ResponseEntity<List<BloodPressure>> getAllBloodPressures(Pageable pageable) {
         log.debug("REST request to get a page of BloodPressures");
-        Page<BloodPressure> page = bloodPressureService.findAll(pageable);
+
+        Page<BloodPressure> page;
+
+        if (SecurityUtils.isCurrentUserInRole(AuthoritiesConstants.ADMIN)) {
+            page = bloodPressureService.findAllByOrderByDateDesc(pageable);
+        } else {
+            page = bloodPressureService.findByUserIsCurrentUser(pageable);
+        }
+
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/blood-pressures");
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }

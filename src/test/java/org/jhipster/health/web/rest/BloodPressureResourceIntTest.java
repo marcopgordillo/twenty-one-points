@@ -46,7 +46,6 @@ import static org.springframework.security.test.web.servlet.setup.SecurityMockMv
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
 /**
  * Test class for the BloodPressureResource REST controller.
  *
@@ -107,7 +106,7 @@ public class BloodPressureResourceIntTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        final BloodPressureResource bloodPressureResource = new BloodPressureResource(bloodPressureService);
+        final BloodPressureResource bloodPressureResource = new BloodPressureResource(bloodPressureService, userRepository);
         this.restBloodPressureMockMvc = MockMvcBuilders.standaloneSetup(bloodPressureResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)
             .setControllerAdvice(exceptionTranslator)
@@ -140,8 +139,15 @@ public class BloodPressureResourceIntTest {
     public void createBloodPressure() throws Exception {
         int databaseSizeBeforeCreate = bloodPressureRepository.findAll().size();
 
+        // Create security-aware mockMvc
+        restBloodPressureMockMvc = MockMvcBuilders
+            .webAppContextSetup(context)
+            .apply(springSecurity())
+            .build();
+
         // Create the BloodPressure
         restBloodPressureMockMvc.perform(post("/api/blood-pressures")
+            .with(user("user"))
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
             .content(TestUtil.convertObjectToJsonBytes(bloodPressure)))
             .andExpect(status().isCreated());
@@ -240,8 +246,15 @@ public class BloodPressureResourceIntTest {
         // Initialize the database
         bloodPressureRepository.saveAndFlush(bloodPressure);
 
+        // Create security-aware mockMvc
+        restBloodPressureMockMvc = MockMvcBuilders
+                .webAppContextSetup(context)
+                .apply(springSecurity())
+                .build();
+
         // Get all the bloodPressureList
-        restBloodPressureMockMvc.perform(get("/api/blood-pressures?sort=id,desc"))
+        restBloodPressureMockMvc.perform(get("/api/blood-pressures?sort=id,desc")
+            .with(user("admin").roles("ADMIN")))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(bloodPressure.getId().intValue())))

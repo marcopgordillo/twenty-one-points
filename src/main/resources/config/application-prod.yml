@@ -27,8 +27,8 @@ spring:
             enabled: false
     datasource:
         type: com.zaxxer.hikari.HikariDataSource
-        url: jdbc:postgresql://localhost:5432/TwentyOnePoints
-        username: TwentyOnePoints
+        url: ${DATABASE_URL}
+        username:
         password:
         hikari:
             poolName: Hikari
@@ -46,14 +46,14 @@ spring:
             hibernate.cache.region.factory_class: io.github.jhipster.config.jcache.BeanClassLoaderAwareJCacheRegionFactory
     data:
         jest:
-            uri: http://localhost:9200
+            uri: ${BONSAI_URL}
     liquibase:
         contexts: prod
     mail:
-        host: localhost
-        port: 25
-        username:
-        password:
+        host: smtp.sendgrid.net
+        port: 587
+        username: ${SENDGRID_USERNAME}
+        password: ${SENDGRID_PASSWORD}
     thymeleaf:
         cache: true
 

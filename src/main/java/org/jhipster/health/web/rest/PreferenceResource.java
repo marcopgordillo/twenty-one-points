@@ -2,6 +2,9 @@ package org.jhipster.health.web.rest;
 
 import io.github.jhipster.web.util.ResponseUtil;
 import org.jhipster.health.domain.Preference;
+import org.jhipster.health.repository.UserRepository;
+import org.jhipster.health.security.AuthoritiesConstants;
+import org.jhipster.health.security.SecurityUtils;
 import org.jhipster.health.service.PreferenceService;
 import org.jhipster.health.web.rest.errors.BadRequestAlertException;
 import org.jhipster.health.web.rest.util.HeaderUtil;
@@ -28,9 +31,11 @@ public class PreferenceResource {
     private static final String ENTITY_NAME = "preference";
 
     private final PreferenceService preferenceService;
+    private final UserRepository userRepository;
 
-    public PreferenceResource(PreferenceService preferenceService) {
+    public PreferenceResource(PreferenceService preferenceService, UserRepository userRepository) {
         this.preferenceService = preferenceService;
+        this.userRepository = userRepository;
     }
 
     /**
@@ -46,6 +51,12 @@ public class PreferenceResource {
         if (preference.getId() != null) {
             throw new BadRequestAlertException("A new preference cannot already have an ID", ENTITY_NAME, "idexists");
         }
+
+        if (!SecurityUtils.isCurrentUserInRole(AuthoritiesConstants.ADMIN)) {
+            log.debug("No user passed in, using current user: {}", SecurityUtils.getCurrentUserLogin());
+            preference.setUser(userRepository.findOneByLogin(SecurityUtils.getCurrentUserLogin().orElse(null)).orElse(null));
+        }
+
         Preference result = preferenceService.save(preference);
         return ResponseEntity.created(new URI("/api/preferences/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
@@ -81,7 +92,16 @@ public class PreferenceResource {
     @GetMapping("/preferences")
     public List<Preference> getAllPreferences() {
         log.debug("REST request to get all Preferences");
-        return preferenceService.findAll();
+
+        List<Preference> preferences;
+
+        if (SecurityUtils.isCurrentUserInRole(AuthoritiesConstants.ADMIN)) {
+            preferences = preferenceService.findAll();
+        } else {
+            preferences = preferenceService.findByUserIsCurrentUser();
+        }
+
+        return preferences;
     }
 
     /**

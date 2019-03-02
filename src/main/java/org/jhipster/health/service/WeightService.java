@@ -58,4 +58,8 @@ public interface WeightService {
     List<Weight> findByDays(Integer days);
 
     List<Weight> findByMonth(YearMonth date);
+
+    Page<Weight> findAllByOrderByDateDesc(Pageable pageable);
+
+    Page<Weight> findByUserIsCurrentUser(Pageable pageable);
 }

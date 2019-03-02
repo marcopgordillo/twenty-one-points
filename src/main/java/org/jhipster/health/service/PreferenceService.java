@@ -51,4 +51,6 @@ public interface PreferenceService {
     List<Preference> search(String query);
 
     Preference findUserPreference();
+
+    List<Preference> findByUserIsCurrentUser();
 }

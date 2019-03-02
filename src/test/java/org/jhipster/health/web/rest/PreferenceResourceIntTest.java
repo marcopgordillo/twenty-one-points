@@ -4,6 +4,7 @@ import org.jhipster.health.TwentyOnePointsApp;
 import org.jhipster.health.domain.Preference;
 import org.jhipster.health.domain.enumeration.Unit;
 import org.jhipster.health.repository.PreferenceRepository;
+import org.jhipster.health.repository.UserRepository;
 import org.jhipster.health.repository.search.PreferenceSearchRepository;
 import org.jhipster.health.service.PreferenceService;
 import org.jhipster.health.web.rest.errors.ExceptionTranslator;
@@ -21,6 +22,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Validator;
+import org.springframework.web.context.WebApplicationContext;
 
 import javax.persistence.EntityManager;
 import java.util.Collections;
@@ -31,6 +33,8 @@ import static org.elasticsearch.index.query.QueryBuilders.queryStringQuery;
 import static org.hamcrest.Matchers.hasItem;
 import static org.jhipster.health.web.rest.TestUtil.createFormattingConversionService;
 import static org.mockito.Mockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 /**
@@ -50,6 +54,12 @@ public class PreferenceResourceIntTest {
 
     @Autowired
     private PreferenceRepository preferenceRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private WebApplicationContext context;
 
     @Autowired
     private PreferenceService preferenceService;
@@ -84,7 +94,7 @@ public class PreferenceResourceIntTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        final PreferenceResource preferenceResource = new PreferenceResource(preferenceService);
+        final PreferenceResource preferenceResource = new PreferenceResource(preferenceService, userRepository);
         this.restPreferenceMockMvc = MockMvcBuilders.standaloneSetup(preferenceResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)
             .setControllerAdvice(exceptionTranslator)
@@ -116,8 +126,15 @@ public class PreferenceResourceIntTest {
     public void createPreference() throws Exception {
         int databaseSizeBeforeCreate = preferenceRepository.findAll().size();
 
+        // Create security-aware mockMvc
+        restPreferenceMockMvc = MockMvcBuilders
+            .webAppContextSetup(context)
+            .apply(springSecurity())
+            .build();
+
         // Create the Preference
         restPreferenceMockMvc.perform(post("/api/preferences")
+            .with(user("user"))
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
             .content(TestUtil.convertObjectToJsonBytes(preference)))
             .andExpect(status().isCreated());
@@ -179,8 +196,15 @@ public class PreferenceResourceIntTest {
         // Initialize the database
         preferenceRepository.saveAndFlush(preference);
 
+        // Create security-aware mockMvc
+        restPreferenceMockMvc = MockMvcBuilders
+            .webAppContextSetup(context)
+            .apply(springSecurity())
+            .build();
+
         // Get all the preferenceList
-        restPreferenceMockMvc.perform(get("/api/preferences?sort=id,desc"))
+        restPreferenceMockMvc.perform(get("/api/preferences?sort=id,desc")
+            .with(user("admin").roles("ADMIN")))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(preference.getId().intValue())))
@@ -222,7 +246,7 @@ public class PreferenceResourceIntTest {
         int databaseSizeBeforeUpdate = preferenceRepository.findAll().size();
 
         // Update the preference
-        Preference updatedPreference = preferenceRepository.findById(preference.getId()).get();
+        Preference updatedPreference = preferenceRepository.findById(preference.getId()).orElse(null);
         // Disconnect from session so that the updates on updatedPreference are not directly saved in db
         em.detach(updatedPreference);
         updatedPreference
