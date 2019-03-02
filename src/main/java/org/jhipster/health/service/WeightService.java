@@ -1,10 +1,11 @@
 package org.jhipster.health.service;
 
 import org.jhipster.health.domain.Weight;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.time.YearMonth;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -53,4 +54,8 @@ public interface WeightService {
      * @return the list of entities
      */
     Page<Weight> search(String query, Pageable pageable);
+
+    List<Weight> findByDays(Integer days);
+
+    List<Weight> findByMonth(YearMonth date);
 }

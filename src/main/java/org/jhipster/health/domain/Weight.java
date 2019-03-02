@@ -4,11 +4,10 @@ package org.jhipster.health.domain;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.springframework.data.elasticsearch.annotations.Document;
 
 import javax.persistence.*;
-import javax.validation.constraints.*;
-
-import org.springframework.data.elasticsearch.annotations.Document;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.ZonedDateTime;
 import java.util.Objects;
@@ -40,6 +39,15 @@ public class Weight implements Serializable {
     @ManyToOne
     @JsonIgnoreProperties("weights")
     private User user;
+
+    public Weight() {
+    }
+
+    public Weight(ZonedDateTime timestamp, Double weight, User user) {
+        this.timestamp = timestamp;
+        this.weight = weight;
+        this.user = user;
+    }
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
     public Long getId() {

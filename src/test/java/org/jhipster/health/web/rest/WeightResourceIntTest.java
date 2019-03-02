@@ -1,17 +1,19 @@
 package org.jhipster.health.web.rest;
 
 import org.jhipster.health.TwentyOnePointsApp;
-
+import org.jhipster.health.domain.User;
 import org.jhipster.health.domain.Weight;
+import org.jhipster.health.repository.UserRepository;
 import org.jhipster.health.repository.WeightRepository;
 import org.jhipster.health.repository.search.WeightSearchRepository;
 import org.jhipster.health.service.WeightService;
 import org.jhipster.health.web.rest.errors.ExceptionTranslator;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageImpl;
@@ -24,23 +26,28 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Validator;
+import org.springframework.web.context.WebApplicationContext;
 
 import javax.persistence.EntityManager;
 import java.time.Instant;
-import java.time.ZonedDateTime;
-import java.time.ZoneOffset;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
 
-
-import static org.jhipster.health.web.rest.TestUtil.sameInstant;
-import static org.jhipster.health.web.rest.TestUtil.createFormattingConversionService;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.elasticsearch.index.query.QueryBuilders.queryStringQuery;
 import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasSize;
+import static org.jhipster.health.web.rest.TestUtil.createFormattingConversionService;
+import static org.jhipster.health.web.rest.TestUtil.sameInstant;
 import static org.mockito.Mockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
@@ -58,8 +65,16 @@ public class WeightResourceIntTest {
     private static final Double DEFAULT_WEIGHT = 1D;
     private static final Double UPDATED_WEIGHT = 2D;
 
+    private final Logger log = LoggerFactory.getLogger(WeightResourceIntTest.class);
+
     @Autowired
     private WeightRepository weightRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private WebApplicationContext context;
 
     @Autowired
     private WeightService weightService;
@@ -344,5 +359,77 @@ public class WeightResourceIntTest {
         assertThat(weight1).isNotEqualTo(weight2);
         weight1.setId(null);
         assertThat(weight1).isNotEqualTo(weight2);
+    }
+
+    private void createByMonth(ZonedDateTime firstDate, ZonedDateTime firstDayOfLastMonth) {
+        log.debug("firstDate: {}, firstOfLastMonth: {}", firstDate.toString(), firstDayOfLastMonth.toString());
+        User user = userRepository.findOneByLogin("user").get();
+
+        weightService.save(new Weight(firstDate, 205D, user));
+        weightService.save(new Weight(firstDate.plusDays(10), 200D, user));
+        weightService.save(new Weight(firstDate.plusDays(20), 195D, user));
+
+        // last month
+        weightService.save(new Weight(firstDayOfLastMonth, 208D, user));
+        weightService.save(new Weight(firstDayOfLastMonth.plusDays(11), 206D, user));
+        weightService.save(new Weight(firstDayOfLastMonth.plusDays(23), 204D, user));
+    }
+
+    @Test
+    @Transactional
+    public void getForLast30Days() throws Exception {
+        ZonedDateTime now = ZonedDateTime.now();
+        ZonedDateTime thirtyDaysAgo = now.minusDays(30);
+        ZonedDateTime firstDayOfLastMonth = now.withDayOfMonth(1).minusMonths(1);
+        createByMonth(thirtyDaysAgo, firstDayOfLastMonth);
+
+        // create security-aware mockMvc
+        restWeightMockMvc = MockMvcBuilders
+            .webAppContextSetup(context)
+            .apply(springSecurity())
+            .build();
+
+        // Get all the weighIns
+        restWeightMockMvc.perform(get("/api/weights")
+            .with(user("user").roles("USER")))
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+            .andExpect(jsonPath("$", hasSize(6)));
+
+        // Get the weighIns for the last 30 days
+        restWeightMockMvc.perform(get("/api/weight-by-days/{days}", 30)
+            .with(user("user").roles("USER")))
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+            .andExpect(jsonPath("$.period").value("Last 30 Days"))
+            .andExpect(jsonPath("$.weighIns.[*].weight").value(hasItem(200D)));
+    }
+
+    @Test
+    @Transactional
+    public void getByLastMonth() throws Exception {
+        ZonedDateTime now = ZonedDateTime.now();
+        ZonedDateTime firstOfMonth = now.withDayOfMonth(1);
+        ZonedDateTime firstDayOfLastMonth = firstOfMonth.minusMonths(1);
+        createByMonth(firstOfMonth, firstDayOfLastMonth);
+
+        // create security-aware mockMvc
+        restWeightMockMvc = MockMvcBuilders
+            .webAppContextSetup(context)
+            .apply(springSecurity())
+            .build();
+
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM");
+
+        // Get the points for last week
+        restWeightMockMvc.perform(get("/api/weight-by-month/{yearAndMonth}", fmt.format(firstDayOfLastMonth))
+            .with(user("user").roles("USER")))
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+            .andExpect(jsonPath("$.period").value(fmt.format(firstDayOfLastMonth)))
+            .andExpect(jsonPath("$.weighIns.[*].weight").value(hasItem(206D)));
     }
 }
