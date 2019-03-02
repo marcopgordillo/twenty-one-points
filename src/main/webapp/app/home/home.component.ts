@@ -9,6 +9,7 @@ import { Preference } from 'app/shared/model/preference.model';
 import { PreferenceService } from 'app/entities/preference';
 import { BloodPressureService } from 'app/entities/blood-pressure';
 import { D3ChartService } from 'app/home/d3-chart.service';
+import { WeightService } from 'app/entities/weight';
 
 @Component({
     selector: 'jhi-home',
@@ -25,6 +26,9 @@ export class HomeComponent implements OnInit, OnDestroy {
     bpReadings: any = {};
     bpOptions: any;
     bpData: any;
+    weights: any = {};
+    weightOptions: any;
+    weightData: any;
 
     constructor(
         private accountService: AccountService,
@@ -32,7 +36,8 @@ export class HomeComponent implements OnInit, OnDestroy {
         private eventManager: JhiEventManager,
         private pointService: PointService,
         private preferenceService: PreferenceService,
-        private bloodPressureService: BloodPressureService
+        private bloodPressureService: BloodPressureService,
+        private weightService: WeightService
     ) {}
 
     ngOnInit() {
@@ -133,6 +138,35 @@ export class HomeComponent implements OnInit, OnDestroy {
                 this.bpOptions.chart.yDomain = [Math.min.apply(Math, totalValues) - 10, Math.max.apply(Math, totalValues) + 10];
             } else {
                 this.bpReadings.readings = [];
+            }
+        });
+
+        this.weightService.last30Days().subscribe((weights: any) => {
+            weights = weights.body;
+            this.weights = weights;
+            if (weights.weighIns.length) {
+                this.weightOptions = { ...D3ChartService.getChartConfig() };
+                this.weightOptions.title.text = this.weights.period;
+                this.weightOptions.chart.yAxis.axisLabel = 'Weight';
+                const weightValues = [];
+                const values = [];
+                weights.weighIns.forEach(item => {
+                    weightValues.push({
+                        x: new Date(item.timestamp),
+                        y: item.weight
+                    });
+                    values.push(item.weight);
+                });
+                this.weightData = [
+                    {
+                        values: weightValues,
+                        key: 'Weight',
+                        color: '#ffeb3b',
+                        area: true
+                    }
+                ];
+                // set y scale to be 10 more than max and min
+                this.weightOptions.chart.yDomain = [Math.min.apply(Math, values) - 10, Math.max.apply(Math, values) + 10];
             }
         });
     }

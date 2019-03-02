@@ -5,18 +5,19 @@ import io.micrometer.core.annotation.Timed;
 import io.swagger.annotations.ApiParam;
 import org.jhipster.health.domain.Point;
 import org.jhipster.health.repository.UserRepository;
-import org.jhipster.health.repository.search.PointSearchRepository;
 import org.jhipster.health.security.AuthoritiesConstants;
 import org.jhipster.health.security.SecurityUtils;
 import org.jhipster.health.service.PointService;
 import org.jhipster.health.web.rest.errors.BadRequestAlertException;
 import org.jhipster.health.web.rest.util.HeaderUtil;
 import org.jhipster.health.web.rest.util.PaginationUtil;
+import org.jhipster.health.web.rest.vm.PointsPerMonth;
 import org.jhipster.health.web.rest.vm.PointsPerWeek;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,9 +25,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.ZoneId;
+import java.time.YearMonth;
 import java.util.List;
 import java.util.Optional;
 
@@ -43,12 +43,10 @@ public class PointResource {
 
     private final PointService pointService;
     private final UserRepository userRepository;
-    private final PointSearchRepository pointsSearchRepository;
 
-    public PointResource(PointService pointService, UserRepository userRepository, PointSearchRepository pointsSearchRepository) {
+    public PointResource(PointService pointService, UserRepository userRepository) {
         this.pointService = pointService;
         this.userRepository = userRepository;
-        this.pointsSearchRepository = pointsSearchRepository;
     }
 
     /**
@@ -74,7 +72,6 @@ public class PointResource {
         }
 
         Point result = pointService.save(point);
-        pointsSearchRepository.save(result);
         return ResponseEntity.created(new URI("/api/points/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
             .body(result);
@@ -170,34 +167,25 @@ public class PointResource {
      */
     @GetMapping("/points-this-week")
     @Timed
-    public ResponseEntity<PointsPerWeek> getPointsThisWeek(
-        @RequestParam(value="tz", required=false) String timezone) {
-
-        // Get current date (with timezone if passed in)
-        LocalDate now = LocalDate.now();
-        if (timezone != null) {
-            now = LocalDate.now(ZoneId.of(timezone));
-        }
-
-        // Get first day of week
-        LocalDate startOfWeek = now.with(DayOfWeek.MONDAY);
-        // Get last day of week
-        LocalDate endOfWeek = now.with(DayOfWeek.SUNDAY);
-        log.debug("Looking for points between: {} and {}", startOfWeek, endOfWeek);
-
-        List<Point> points =
-            pointService.findAllByDateBetweenAndUserLogin(
-                startOfWeek, endOfWeek, SecurityUtils.getCurrentUserLogin().orElse(null));
-        return calculatePoints(startOfWeek, points);
+    public ResponseEntity<PointsPerWeek> getPointsThisWeek(@RequestParam(value="tz", required=false) String timezone) {
+        return ResponseEntity.ok(pointService.findPointsThisWeek(timezone));
     }
 
-    private ResponseEntity<PointsPerWeek> calculatePoints(LocalDate startOfWeek,
-                                                          List<Point> points) {
-        Integer numPoints = points.stream()
-            .mapToInt(p -> p.getExercise() + p.getMeals() + p.getAlcohol())
-            .sum();
+    /**
+     * GET  /points-by-week/yyyy-MM-dd : get all the points for a particular week.
+     */
+    @GetMapping("/points-by-week/{date}")
+    @Timed
+    public ResponseEntity<PointsPerWeek> getPointsByWeek(@PathVariable @DateTimeFormat(pattern="yyyy-MM-dd") LocalDate date) {
+        return ResponseEntity.ok(pointService.findPointsByWeek(date));
+    }
 
-        PointsPerWeek count = new PointsPerWeek(startOfWeek, numPoints);
-        return ResponseEntity.ok().body(count);
+    /**
+     * GET  /points-by-month : get all the points for a particular current month.
+     */
+    @GetMapping("/points-by-month/{yearWithMonth}")
+    @Timed
+    public ResponseEntity<PointsPerMonth> getPointsByMonth(@PathVariable @DateTimeFormat(pattern="yyyy-MM") YearMonth yearWithMonth) {
+        return ResponseEntity.ok(pointService.findPointsByMonth(yearWithMonth));
     }
 }

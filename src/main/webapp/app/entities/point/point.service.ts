@@ -17,26 +17,48 @@ export class PointService {
     public resourceUrl = SERVER_API_URL + 'api/points';
     public resourceSearchUrl = SERVER_API_URL + 'api/_search/points';
 
+    protected static convertDateFromClient(point: IPoint): IPoint {
+        return Object.assign({}, point, {
+            date: point.date != null && point.date.isValid() ? point.date.format(DATE_FORMAT) : null
+        });
+    }
+
+    protected static convertDateFromServer(res: EntityResponseType): EntityResponseType {
+        if (res.body) {
+            res.body.date = res.body.date != null ? moment(res.body.date) : null;
+        }
+        return res;
+    }
+
+    protected convertDateArrayFromServer(res: EntityArrayResponseType): EntityArrayResponseType {
+        if (res.body) {
+            res.body.forEach((point: IPoint) => {
+                point.date = point.date != null ? moment(point.date) : null;
+            });
+        }
+        return res;
+    }
+
     constructor(protected http: HttpClient) {}
 
     create(point: IPoint): Observable<EntityResponseType> {
-        const copy = this.convertDateFromClient(point);
+        const copy = PointService.convertDateFromClient(point);
         return this.http
             .post<IPoint>(this.resourceUrl, copy, { observe: 'response' })
-            .pipe(map((res: EntityResponseType) => this.convertDateFromServer(res)));
+            .pipe(map((res: EntityResponseType) => PointService.convertDateFromServer(res)));
     }
 
     update(point: IPoint): Observable<EntityResponseType> {
-        const copy = this.convertDateFromClient(point);
+        const copy = PointService.convertDateFromClient(point);
         return this.http
             .put<IPoint>(this.resourceUrl, copy, { observe: 'response' })
-            .pipe(map((res: EntityResponseType) => this.convertDateFromServer(res)));
+            .pipe(map((res: EntityResponseType) => PointService.convertDateFromServer(res)));
     }
 
     find(id: number): Observable<EntityResponseType> {
         return this.http
             .get<IPoint>(`${this.resourceUrl}/${id}`, { observe: 'response' })
-            .pipe(map((res: EntityResponseType) => this.convertDateFromServer(res)));
+            .pipe(map((res: EntityResponseType) => PointService.convertDateFromServer(res)));
     }
 
     query(req?: any): Observable<EntityArrayResponseType> {
@@ -57,33 +79,22 @@ export class PointService {
             .pipe(map((res: EntityArrayResponseType) => this.convertDateArrayFromServer(res)));
     }
 
-    protected convertDateFromClient(point: IPoint): IPoint {
-        const copy: IPoint = Object.assign({}, point, {
-            date: point.date != null && point.date.isValid() ? point.date.format(DATE_FORMAT) : null
-        });
-        return copy;
-    }
-
-    protected convertDateFromServer(res: EntityResponseType): EntityResponseType {
-        if (res.body) {
-            res.body.date = res.body.date != null ? moment(res.body.date) : null;
-        }
-        return res;
-    }
-
-    protected convertDateArrayFromServer(res: EntityArrayResponseType): EntityArrayResponseType {
-        if (res.body) {
-            res.body.forEach((point: IPoint) => {
-                point.date = point.date != null ? moment(point.date) : null;
-            });
-        }
-        return res;
-    }
-
     thisWeek(): Observable<EntityResponseType> {
         const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
         return this.http
-            .get(`api/points-this-week?tz=${tz}`, { observe: 'response' })
-            .pipe(map((res: EntityResponseType) => this.convertDateFromServer(res)));
+            .get(`${SERVER_API_URL}/api/points-this-week?tz=${tz}`, { observe: 'response' })
+            .pipe(map((res: EntityResponseType) => PointService.convertDateFromServer(res)));
+    }
+
+    byWeek(date: string): Observable<EntityResponseType> {
+        return this.http
+            .get(`${SERVER_API_URL}/api/points-by-week/${date}`, { observe: 'response' })
+            .pipe(map((res: EntityResponseType) => PointService.convertDateFromServer(res)));
+    }
+
+    byMonth(month: string): Observable<EntityResponseType> {
+        return this.http
+            .get(`${SERVER_API_URL}/api/points-by-month/${month}`, { observe: 'response' })
+            .pipe(map((res: EntityResponseType) => PointService.convertDateFromServer(res)));
     }
 }

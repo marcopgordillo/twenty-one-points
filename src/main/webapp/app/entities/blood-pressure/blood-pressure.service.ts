@@ -56,6 +56,18 @@ export class BloodPressureService {
             .pipe(map((res: EntityArrayResponseType) => this.convertDateArrayFromServer(res)));
     }
 
+    last30Days(): Observable<EntityResponseType> {
+        return this.http
+            .get(SERVER_API_URL + 'api/bp-by-days/30', { observe: 'response' })
+            .pipe(map((res: EntityResponseType) => this.convertDateFromServer(res)));
+    }
+
+    byMonth(month: string): Observable<EntityResponseType> {
+        return this.http
+            .get(`${SERVER_API_URL}/api/bp-by-month/${month}`, { observe: 'response' })
+            .pipe(map((res: EntityResponseType) => this.convertDateFromServer(res)));
+    }
+
     protected convertDateFromClient(bloodPressure: IBloodPressure): IBloodPressure {
         const copy: IBloodPressure = Object.assign({}, bloodPressure, {
             timestamp: bloodPressure.timestamp != null && bloodPressure.timestamp.isValid() ? bloodPressure.timestamp.toJSON() : null
@@ -77,11 +89,5 @@ export class BloodPressureService {
             });
         }
         return res;
-    }
-
-    last30Days(): Observable<EntityResponseType> {
-        return this.http
-            .get(SERVER_API_URL + 'api/bp-by-days/30', { observe: 'response' })
-            .pipe(map((res: EntityResponseType) => this.convertDateFromServer(res)));
     }
 }

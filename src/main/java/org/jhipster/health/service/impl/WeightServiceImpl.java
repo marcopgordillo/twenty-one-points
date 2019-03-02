@@ -1,20 +1,22 @@
 package org.jhipster.health.service.impl;
 
-import org.jhipster.health.service.WeightService;
 import org.jhipster.health.domain.Weight;
 import org.jhipster.health.repository.WeightRepository;
 import org.jhipster.health.repository.search.WeightSearchRepository;
+import org.jhipster.health.security.SecurityUtils;
+import org.jhipster.health.service.WeightService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.*;
+import java.util.List;
 import java.util.Optional;
 
-import static org.elasticsearch.index.query.QueryBuilders.*;
+import static org.elasticsearch.index.query.QueryBuilders.queryStringQuery;
 
 /**
  * Service Implementation for managing Weight.
@@ -99,4 +101,34 @@ public class WeightServiceImpl implements WeightService {
     public Page<Weight> search(String query, Pageable pageable) {
         log.debug("Request to search for a page of Weights for query {}", query);
         return weightSearchRepository.search(queryStringQuery(query), pageable);    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Weight> findByDays(Integer days) {
+        ZonedDateTime rightNow = ZonedDateTime.now(ZoneOffset.UTC);
+        ZonedDateTime daysAgo = rightNow.minusDays(days);
+
+        List<Weight> weighIns = weightRepository.findAllByTimestampBetweenAndUserLoginOrderByTimestampDesc(daysAgo, rightNow, SecurityUtils.getCurrentUserLogin().orElse(null));
+
+        return weighIns;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Weight> findByMonth(YearMonth date) {
+        LocalDate firstDay = date.atDay(1);
+        LocalDate lastDay = date.atEndOfMonth();
+
+        ZoneId timezone = ZoneId.of("Z");
+
+        List<Weight> weighIns = weightRepository.findAllByTimestampBetweenAndUserLoginOrderByTimestampDesc(firstDay.atStartOfDay(timezone), lastDay.plusDays(1).atStartOfDay(timezone), SecurityUtils.getCurrentUserLogin().orElse(null));
+
+        return weighIns;
+    }
+
+    /*private List<Weight> filterByUser(List<Weight> readings) {
+        Stream<Weight> userReadings = readings.stream()
+            .filter(bp -> bp.getUser().getLogin().equals(SecurityUtils.getCurrentUserLogin().orElse(null)));
+        return userReadings.collect(Collectors.toList());
+    }*/
 }

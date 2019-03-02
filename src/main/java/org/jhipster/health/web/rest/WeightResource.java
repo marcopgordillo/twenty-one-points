@@ -1,28 +1,30 @@
 package org.jhipster.health.web.rest;
+
+import io.github.jhipster.web.util.ResponseUtil;
+import io.micrometer.core.annotation.Timed;
 import org.jhipster.health.domain.Weight;
 import org.jhipster.health.service.WeightService;
 import org.jhipster.health.web.rest.errors.BadRequestAlertException;
 import org.jhipster.health.web.rest.util.HeaderUtil;
 import org.jhipster.health.web.rest.util.PaginationUtil;
-import io.github.jhipster.web.util.ResponseUtil;
+import org.jhipster.health.web.rest.vm.WeightByPeriod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
-
+import java.time.LocalDate;
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.StreamSupport;
-
-import static org.elasticsearch.index.query.QueryBuilders.*;
 
 /**
  * REST controller for managing Weight.
@@ -136,5 +138,34 @@ public class WeightResource {
         HttpHeaders headers = PaginationUtil.generateSearchPaginationHttpHeaders(query, page, "/api/_search/weights");
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
+
+    /**
+     * GET  /weight-by-days : get all the weigh-ins for last x days.
+     */
+    @GetMapping("/weight-by-days/{days}")
+    @Timed
+    public ResponseEntity<WeightByPeriod> getByDays(@PathVariable Integer days) {
+
+        WeightByPeriod response = new WeightByPeriod("Last " + days + " Days", weightService.findByDays(days));
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * GET  /bp-by-days -> get all the blood pressure readings for a particular month.
+     */
+    @GetMapping("/weight-by-month/{date}")
+    @Timed
+    public ResponseEntity<WeightByPeriod> getByMonth(@PathVariable @DateTimeFormat(pattern = "yyyy-MM") YearMonth date) {
+
+        LocalDate firstDay = date.atDay(1);
+
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM");
+        String yearAndMonth = fmt.format(firstDay);
+
+        WeightByPeriod response = new WeightByPeriod(yearAndMonth, weightService.findByMonth(date));
+        return ResponseEntity.ok(response);
+    }
+
+
 
 }

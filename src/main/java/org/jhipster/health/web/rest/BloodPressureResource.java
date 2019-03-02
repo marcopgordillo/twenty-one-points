@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +20,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.LocalDate;
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -142,6 +146,20 @@ public class BloodPressureResource {
     @Timed
     public ResponseEntity<BloodPressureByPeriod> getByDays(@PathVariable int days) {
         BloodPressureByPeriod response = new BloodPressureByPeriod("Last " + days + " Days", bloodPressureService.findByDaysCurrentUser(days));
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * GET  /bp-by-month : get all the blood pressure readings for a particular month.
+     */
+    @GetMapping("/bp-by-month/{date}")
+    @Timed
+    public ResponseEntity<BloodPressureByPeriod> getByMonth(@PathVariable @DateTimeFormat(pattern = "yyyy-MM") YearMonth date) {
+        LocalDate firstDay = date.atDay(1);
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM");
+        String yearAndMonth = fmt.format(firstDay);
+
+        BloodPressureByPeriod response = new BloodPressureByPeriod(yearAndMonth, bloodPressureService.findBpByMonth(date));
         return ResponseEntity.ok(response);
     }
 }
