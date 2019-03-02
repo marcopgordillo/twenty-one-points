@@ -1,9 +1,11 @@
 {
     "home": {
-        "title": "¡Bienvenido, Java Hipster!",
-        "subtitle": "Esta es su página de inicio",
+        "title": "21 Puntos a la salud",
+        "welcome": "Bienvenido!",
+        "welcomeWithName": "Bienvenido, {{name}}!",
+        "subtitle": "21-Points Health es donde se puede rastrear tu salud y mejorar tu vida. \uD83D\uDE0A",
         "logged": {
-            "message": "Está conectado como \"{{username}}\"."
+            "message": "Está conectado como <em>\"{{username}}\"</em>."
         },
         "question": "Si tiene preguntas sobre JHipster:",
         "link": {
