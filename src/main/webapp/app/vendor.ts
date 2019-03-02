@@ -29,6 +29,7 @@ import {
     faSort,
     faSortDown,
     faSortUp,
+    faStar,
     faSync,
     faTachometerAlt,
     faTasks,
@@ -78,5 +79,6 @@ library.add(faCalendarAlt);
 library.add(faSearch);
 library.add(faTrashAlt);
 library.add(faAsterisk);
+library.add(faStar);
 
 // jhipster-needle-add-element-to-vendor - JHipster will add new menu items here
