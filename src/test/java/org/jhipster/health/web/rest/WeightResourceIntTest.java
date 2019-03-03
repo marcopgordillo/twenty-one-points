@@ -1,5 +1,7 @@
 package org.jhipster.health.web.rest;
 
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.jhipster.health.TwentyOnePointsApp;
 import org.jhipster.health.domain.User;
 import org.jhipster.health.domain.Weight;
@@ -351,7 +353,8 @@ public class WeightResourceIntTest {
     public void searchWeight() throws Exception {
         // Initialize the database
         weightService.save(weight);
-        when(mockWeightSearchRepository.search(queryStringQuery("id:" + weight.getId()), PageRequest.of(0, 20)))
+        BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery().must(queryStringQuery("id:" + weight.getId()));
+        when(mockWeightSearchRepository.search(queryBuilder, PageRequest.of(0, 20)))
             .thenReturn(new PageImpl<>(Collections.singletonList(weight), PageRequest.of(0, 1), 1));
         // Search the weight
         restWeightMockMvc.perform(get("/api/_search/weights?query=id:" + weight.getId()))

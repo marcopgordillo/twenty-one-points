@@ -17,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -56,10 +57,15 @@ public class WeightResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
     @PostMapping("/weights")
-    public ResponseEntity<Weight> createWeight(@Valid @RequestBody Weight weight) throws URISyntaxException {
+    public ResponseEntity<?> createWeight(@Valid @RequestBody Weight weight) throws URISyntaxException {
         log.debug("REST request to save Weight : {}", weight);
         if (weight.getId() != null) {
             throw new BadRequestAlertException("A new weight cannot already have an ID", ENTITY_NAME, "idexists");
+        }
+
+        if (weight.getUser() != null &&
+            !weight.getUser().getLogin().equals(SecurityUtils.getCurrentUserLogin().orElse(""))) {
+            return new ResponseEntity<>("error.http.403", HttpStatus.FORBIDDEN);
         }
 
         if (!SecurityUtils.isCurrentUserInRole(AuthoritiesConstants.ADMIN)) {
@@ -80,14 +86,19 @@ public class WeightResource {
      * @return the ResponseEntity with status 200 (OK) and with body the updated weight,
      * or with status 400 (Bad Request) if the weight is not valid,
      * or with status 500 (Internal Server Error) if the weight couldn't be updated
-     * @throws URISyntaxException if the Location URI syntax is incorrect
      */
     @PutMapping("/weights")
-    public ResponseEntity<Weight> updateWeight(@Valid @RequestBody Weight weight) throws URISyntaxException {
+    public ResponseEntity<?> updateWeight(@Valid @RequestBody Weight weight) {
         log.debug("REST request to update Weight : {}", weight);
         if (weight.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
+
+        if (weight.getUser() != null &&
+            !weight.getUser().getLogin().equals(SecurityUtils.getCurrentUserLogin().orElse(""))) {
+            return new ResponseEntity<>("error.http.403", HttpStatus.FORBIDDEN);
+        }
+
         Weight result = weightService.save(weight);
         return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, weight.getId().toString()))
@@ -123,9 +134,15 @@ public class WeightResource {
      * @return the ResponseEntity with status 200 (OK) and with body the weight, or with status 404 (Not Found)
      */
     @GetMapping("/weights/{id}")
-    public ResponseEntity<Weight> getWeight(@PathVariable Long id) {
+    public ResponseEntity<?> getWeight(@PathVariable Long id) {
         log.debug("REST request to get Weight : {}", id);
         Optional<Weight> weight = weightService.findOne(id);
+
+        if (weight.isPresent() && weight.get().getUser() != null &&
+            !weight.get().getUser().getLogin().equals(SecurityUtils.getCurrentUserLogin().orElse(""))) {
+            return new ResponseEntity<>("error.http.403", HttpStatus.FORBIDDEN);
+        }
+
         return ResponseUtil.wrapOrNotFound(weight);
     }
 
@@ -136,8 +153,16 @@ public class WeightResource {
      * @return the ResponseEntity with status 200 (OK)
      */
     @DeleteMapping("/weights/{id}")
-    public ResponseEntity<Void> deleteWeight(@PathVariable Long id) {
+    public ResponseEntity<?> deleteWeight(@PathVariable Long id) {
         log.debug("REST request to delete Weight : {}", id);
+
+        Optional<Weight> weight = weightService.findOne(id);
+
+        if (weight.isPresent() && weight.get().getUser() != null &&
+            !weight.get().getUser().getLogin().equals(SecurityUtils.getCurrentUserLogin().orElse(""))) {
+            return new ResponseEntity<>("error.http.403", HttpStatus.FORBIDDEN);
+        }
+
         weightService.delete(id);
         return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id.toString())).build();
     }

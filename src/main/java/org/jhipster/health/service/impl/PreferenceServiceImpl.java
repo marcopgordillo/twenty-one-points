@@ -1,8 +1,11 @@
 package org.jhipster.health.service.impl;
 
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.jhipster.health.domain.Preference;
 import org.jhipster.health.repository.PreferenceRepository;
 import org.jhipster.health.repository.search.PreferenceSearchRepository;
+import org.jhipster.health.security.AuthoritiesConstants;
 import org.jhipster.health.security.SecurityUtils;
 import org.jhipster.health.service.PreferenceService;
 import org.slf4j.Logger;
@@ -15,6 +18,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
 import static org.elasticsearch.index.query.QueryBuilders.queryStringQuery;
 
 /**
@@ -97,8 +101,15 @@ public class PreferenceServiceImpl implements PreferenceService {
     @Transactional(readOnly = true)
     public List<Preference> search(String query) {
         log.debug("Request to search Preferences for query {}", query);
+
+        BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery().must(queryStringQuery(query));
+        if (SecurityUtils.isAuthenticated() && !SecurityUtils.isCurrentUserInRole(AuthoritiesConstants.ADMIN)) {
+            queryBuilder = queryBuilder.filter(matchQuery("user.login",
+                SecurityUtils.getCurrentUserLogin().orElse("")));
+        }
+
         return StreamSupport
-            .stream(preferenceSearchRepository.search(queryStringQuery(query)).spliterator(), false)
+            .stream(preferenceSearchRepository.search(queryBuilder).spliterator(), false)
             .collect(Collectors.toList());
     }
 

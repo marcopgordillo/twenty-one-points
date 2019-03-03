@@ -17,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -56,10 +57,15 @@ public class BloodPressureResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
     @PostMapping("/blood-pressures")
-    public ResponseEntity<BloodPressure> createBloodPressure(@Valid @RequestBody BloodPressure bloodPressure) throws URISyntaxException {
+    public ResponseEntity<?> createBloodPressure(@Valid @RequestBody BloodPressure bloodPressure) throws URISyntaxException {
         log.debug("REST request to save BloodPressure : {}", bloodPressure);
         if (bloodPressure.getId() != null) {
             throw new BadRequestAlertException("A new bloodPressure cannot already have an ID", ENTITY_NAME, "idexists");
+        }
+
+        if (bloodPressure.getUser() != null &&
+            !bloodPressure.getUser().getLogin().equals(SecurityUtils.getCurrentUserLogin().orElse(""))) {
+            return new ResponseEntity<>("error.http.403", HttpStatus.FORBIDDEN);
         }
 
         if (!SecurityUtils.isCurrentUserInRole(AuthoritiesConstants.ADMIN)) {
@@ -80,14 +86,19 @@ public class BloodPressureResource {
      * @return the ResponseEntity with status 200 (OK) and with body the updated bloodPressure,
      * or with status 400 (Bad Request) if the bloodPressure is not valid,
      * or with status 500 (Internal Server Error) if the bloodPressure couldn't be updated
-     * @throws URISyntaxException if the Location URI syntax is incorrect
      */
     @PutMapping("/blood-pressures")
-    public ResponseEntity<BloodPressure> updateBloodPressure(@Valid @RequestBody BloodPressure bloodPressure) throws URISyntaxException {
+    public ResponseEntity<?> updateBloodPressure(@Valid @RequestBody BloodPressure bloodPressure) {
         log.debug("REST request to update BloodPressure : {}", bloodPressure);
         if (bloodPressure.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
+
+        if (bloodPressure.getUser() != null &&
+            !bloodPressure.getUser().getLogin().equals(SecurityUtils.getCurrentUserLogin().orElse(""))) {
+            return new ResponseEntity<>("error.http.403", HttpStatus.FORBIDDEN);
+        }
+
         BloodPressure result = bloodPressureService.save(bloodPressure);
         return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, bloodPressure.getId().toString()))
@@ -123,9 +134,15 @@ public class BloodPressureResource {
      * @return the ResponseEntity with status 200 (OK) and with body the bloodPressure, or with status 404 (Not Found)
      */
     @GetMapping("/blood-pressures/{id}")
-    public ResponseEntity<BloodPressure> getBloodPressure(@PathVariable Long id) {
+    public ResponseEntity<?> getBloodPressure(@PathVariable Long id) {
         log.debug("REST request to get BloodPressure : {}", id);
         Optional<BloodPressure> bloodPressure = bloodPressureService.findOne(id);
+
+        if (bloodPressure.isPresent() && bloodPressure.get().getUser() != null &&
+            !bloodPressure.get().getUser().getLogin().equals(SecurityUtils.getCurrentUserLogin().orElse(""))) {
+            return new ResponseEntity<>("error.http.403", HttpStatus.FORBIDDEN);
+        }
+
         return ResponseUtil.wrapOrNotFound(bloodPressure);
     }
 
@@ -136,8 +153,15 @@ public class BloodPressureResource {
      * @return the ResponseEntity with status 200 (OK)
      */
     @DeleteMapping("/blood-pressures/{id}")
-    public ResponseEntity<Void> deleteBloodPressure(@PathVariable Long id) {
+    public ResponseEntity<?> deleteBloodPressure(@PathVariable Long id) {
         log.debug("REST request to delete BloodPressure : {}", id);
+
+        Optional<BloodPressure> bloodPressure = bloodPressureService.findOne(id);
+        if (bloodPressure.isPresent() && bloodPressure.get().getUser() != null &&
+            !bloodPressure.get().getUser().getLogin().equals(SecurityUtils.getCurrentUserLogin().orElse(""))) {
+            return new ResponseEntity<>("error.http.403", HttpStatus.FORBIDDEN);
+        }
+
         bloodPressureService.delete(id);
         return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id.toString())).build();
     }
@@ -153,7 +177,9 @@ public class BloodPressureResource {
     @GetMapping("/_search/blood-pressures")
     public ResponseEntity<List<BloodPressure>> searchBloodPressures(@RequestParam String query, Pageable pageable) {
         log.debug("REST request to search for a page of BloodPressures for query {}", query);
+
         Page<BloodPressure> page = bloodPressureService.search(query, pageable);
+
         HttpHeaders headers = PaginationUtil.generateSearchPaginationHttpHeaders(query, page, "/api/_search/blood-pressures");
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
