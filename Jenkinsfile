@@ -43,7 +43,7 @@ node {
             sh '''./gradlew &
                 bootPid=$!
                 sleep 60s
-                yarn e2e
+                npm run e2e
                 kill $bootPid
                 '''
         }
