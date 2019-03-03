@@ -5,7 +5,7 @@ node {
         checkout scm
     }
 
-//    docker.image('myjhipster').inside('-u jhipster -e GRADLE_USER_HOME=.gradle') {
+    docker.image('jhipster/jhipster:v5.8.1').inside('-u jhipster -e GRADLE_USER_HOME=.gradle') {
         stage('check java') {
             sh "java -version"
         }
@@ -39,30 +39,30 @@ node {
             }
         }
 
-        stage('protractor tests') {
-            sh '''./gradlew &
-                bootPid=$!
-                sleep 60s
-                npm run e2e
-                kill $bootPid
-                '''
-        }
-
         stage('packaging') {
             sh "./gradlew bootWar -x test -Pprod -PnodeInstall --no-daemon"
             archiveArtifacts artifacts: '**/build/libs/*.war', fingerprint: true
         }
 
-        /*stage('deployment') {
+        stage('deployment') {
             sh "./gradlew deployHeroku --no-daemon"
-        }*/
+        }
 
         stage('quality analysis') {
             withSonarQubeEnv('sonar') {
                 sh "./gradlew sonarqube --no-daemon"
             }
         }
-//    }
+    }
+
+    stage('protractor tests') {
+        sh '''./gradlew &
+                bootPid=$!
+                sleep 60s
+                npm run e2e
+                kill $bootPid
+                '''
+    }
 
     def dockerImage
     stage('build docker') {
