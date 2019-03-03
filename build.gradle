@@ -57,7 +57,7 @@ dependencyManagement {
 defaultTasks 'bootRun'
 
 group = 'org.jhipster.health'
-version = '1.0.2.RELEASE'
+version = '1.1.0.RELEASE'
 
 description = ''
 
