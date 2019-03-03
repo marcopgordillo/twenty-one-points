@@ -40,7 +40,7 @@ node {
         }
 
         stage('protractor tests') {
-            sh '''./gradlew &
+            sh '''./gradlew --no-daemon &
                     bootPid=$!
                     sleep 60s
                     npm run e2e
