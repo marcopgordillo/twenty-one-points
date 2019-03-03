@@ -67,7 +67,7 @@ public class PointResource {
                     "A new points cannot already have an ID")).body(null);
         }
 
-        if (point.getUser() != null &&
+        if (!SecurityUtils.isCurrentUserInRole(AuthoritiesConstants.ADMIN) && point.getUser() != null &&
             !point.getUser().getLogin().equals(SecurityUtils.getCurrentUserLogin().orElse(""))) {
             return new ResponseEntity<>("error.http.403", HttpStatus.FORBIDDEN);
         }
@@ -94,7 +94,7 @@ public class PointResource {
     @PutMapping("/points")
     public ResponseEntity<?> updatePoint(@Valid @RequestBody Point point) {
         log.debug("REST request to update Point : {}", point);
-        if (point.getId() == null) {
+        if (!SecurityUtils.isCurrentUserInRole(AuthoritiesConstants.ADMIN) && point.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
 
@@ -142,7 +142,7 @@ public class PointResource {
         log.debug("REST request to get Point : {}", id);
         Optional<Point> point = pointService.findOne(id);
 
-        if (point.isPresent() && point.get().getUser() != null &&
+        if (!SecurityUtils.isCurrentUserInRole(AuthoritiesConstants.ADMIN) && point.isPresent() && point.get().getUser() != null &&
             !point.get().getUser().getLogin().equals(SecurityUtils.getCurrentUserLogin().orElse(""))) {
             return new ResponseEntity<>("error.http.403", HttpStatus.FORBIDDEN);
         }
@@ -162,7 +162,7 @@ public class PointResource {
 
         Optional<Point> point = pointService.findOne(id);
 
-        if (point.isPresent() && point.get().getUser() != null &&
+        if (!SecurityUtils.isCurrentUserInRole(AuthoritiesConstants.ADMIN) && point.isPresent() && point.get().getUser() != null &&
             !point.get().getUser().getLogin().equals(SecurityUtils.getCurrentUserLogin().orElse(""))) {
             return new ResponseEntity<>("error.http.403", HttpStatus.FORBIDDEN);
         }

@@ -53,7 +53,7 @@ public class PreferenceResource {
             throw new BadRequestAlertException("A new preference cannot already have an ID", ENTITY_NAME, "idexists");
         }
 
-        if (preference.getUser() != null &&
+        if (!SecurityUtils.isCurrentUserInRole(AuthoritiesConstants.ADMIN) && preference.getUser() != null &&
             !preference.getUser().getLogin().equals(SecurityUtils.getCurrentUserLogin().orElse(""))) {
             return new ResponseEntity<>("error.http.403", HttpStatus.FORBIDDEN);
         }
@@ -84,7 +84,7 @@ public class PreferenceResource {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
 
-        if (preference.getUser() != null &&
+        if (!SecurityUtils.isCurrentUserInRole(AuthoritiesConstants.ADMIN) && preference.getUser() != null &&
             !preference.getUser().getLogin().equals(SecurityUtils.getCurrentUserLogin().orElse(""))) {
             return new ResponseEntity<>("error.http.403", HttpStatus.FORBIDDEN);
         }
@@ -126,7 +126,7 @@ public class PreferenceResource {
         log.debug("REST request to get Preference : {}", id);
         Optional<Preference> preference = preferenceService.findOne(id);
 
-        if (preference.isPresent() && preference.get().getUser() != null &&
+        if (!SecurityUtils.isCurrentUserInRole(AuthoritiesConstants.ADMIN) && preference.isPresent() && preference.get().getUser() != null &&
             !preference.get().getUser().getLogin().equals(SecurityUtils.getCurrentUserLogin().orElse(""))) {
             return new ResponseEntity<>("error.http.403", HttpStatus.FORBIDDEN);
         }
@@ -146,7 +146,7 @@ public class PreferenceResource {
 
         Optional<Preference> preference = preferenceService.findOne(id);
 
-        if (preference.isPresent() && preference.get().getUser() != null &&
+        if (!SecurityUtils.isCurrentUserInRole(AuthoritiesConstants.ADMIN) && preference.isPresent() && preference.get().getUser() != null &&
             !preference.get().getUser().getLogin().equals(SecurityUtils.getCurrentUserLogin().orElse(""))) {
             return new ResponseEntity<>("error.http.403", HttpStatus.FORBIDDEN);
         }
