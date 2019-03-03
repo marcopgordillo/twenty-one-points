@@ -32,7 +32,7 @@
             <th jhiSortBy="id"><span jhiTranslate="global.field.id">ID</span> <fa-icon [icon]="'sort'"></fa-icon></th>
             <th jhiSortBy="timestamp"><span jhiTranslate="twentyOnePointsApp.weight.timestamp">Timestamp</span> <fa-icon [icon]="'sort'"></fa-icon></th>
             <th jhiSortBy="weight"><span jhiTranslate="twentyOnePointsApp.weight.weight">Weight</span> <fa-icon [icon]="'sort'"></fa-icon></th>
-            <th jhiSortBy="user.login"><span jhiTranslate="twentyOnePointsApp.weight.user">User</span> <fa-icon [icon]="'sort'"></fa-icon></th>
+            <th jhiSortBy="user.login" *jhiHasAnyAuthority="'ROLE_ADMIN'"><span jhiTranslate="twentyOnePointsApp.weight.user">User</span> <fa-icon [icon]="'sort'"></fa-icon></th>
             <th></th>
             </tr>
             </thead>
@@ -41,7 +41,7 @@
                 <td><a [routerLink]="['/weight', weight.id, 'view' ]">{{weight.id}}</a></td>
                 <td>{{weight.timestamp | date:'medium'}}</td>
                 <td>{{weight.weight}}</td>
-                <td>
+                <td *jhiHasAnyAuthority="'ROLE_ADMIN'">
                     {{weight.user?.login}}
                 </td>
                 <td class="text-right">

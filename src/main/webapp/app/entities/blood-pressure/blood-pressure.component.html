@@ -33,7 +33,7 @@
             <th jhiSortBy="timestamp"><span jhiTranslate="twentyOnePointsApp.bloodPressure.timestamp">Timestamp</span> <fa-icon [icon]="'sort'"></fa-icon></th>
             <th jhiSortBy="systolic"><span jhiTranslate="twentyOnePointsApp.bloodPressure.systolic">Systolic</span> <fa-icon [icon]="'sort'"></fa-icon></th>
             <th jhiSortBy="diastolic"><span jhiTranslate="twentyOnePointsApp.bloodPressure.diastolic">Diastolic</span> <fa-icon [icon]="'sort'"></fa-icon></th>
-            <th jhiSortBy="user.login"><span jhiTranslate="twentyOnePointsApp.bloodPressure.user">User</span> <fa-icon [icon]="'sort'"></fa-icon></th>
+            <th jhiSortBy="user.login" *jhiHasAnyAuthority="'ROLE_ADMIN'"><span jhiTranslate="twentyOnePointsApp.bloodPressure.user">User</span> <fa-icon [icon]="'sort'"></fa-icon></th>
             <th></th>
             </tr>
             </thead>
@@ -43,7 +43,7 @@
                 <td>{{bloodPressure.timestamp | date:'medium'}}</td>
                 <td>{{bloodPressure.systolic}}</td>
                 <td>{{bloodPressure.diastolic}}</td>
-                <td>
+                <td *jhiHasAnyAuthority="'ROLE_ADMIN'">
                     {{bloodPressure.user?.login}}
                 </td>
                 <td class="text-right">

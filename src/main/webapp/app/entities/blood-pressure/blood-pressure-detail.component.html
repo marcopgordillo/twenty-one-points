@@ -17,8 +17,8 @@
                 <dd>
                     <span>{{bloodPressure.diastolic}}</span>
                 </dd>
-                <dt><span jhiTranslate="twentyOnePointsApp.bloodPressure.user">User</span></dt>
-                <dd>
+                <dt *jhiHasAnyAuthority="'ROLE_ADMIN'"><span jhiTranslate="twentyOnePointsApp.bloodPressure.user">User</span></dt>
+                <dd *jhiHasAnyAuthority="'ROLE_ADMIN'">
                     {{bloodPressure.user?.login}}
                 </dd>
             </dl>
