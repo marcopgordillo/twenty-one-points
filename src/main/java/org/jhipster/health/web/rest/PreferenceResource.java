@@ -10,6 +10,7 @@ import org.jhipster.health.web.rest.errors.BadRequestAlertException;
 import org.jhipster.health.web.rest.util.HeaderUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -46,10 +47,15 @@ public class PreferenceResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
     @PostMapping("/preferences")
-    public ResponseEntity<Preference> createPreference(@Valid @RequestBody Preference preference) throws URISyntaxException {
+    public ResponseEntity<?> createPreference(@Valid @RequestBody Preference preference) throws URISyntaxException {
         log.debug("REST request to save Preference : {}", preference);
         if (preference.getId() != null) {
             throw new BadRequestAlertException("A new preference cannot already have an ID", ENTITY_NAME, "idexists");
+        }
+
+        if (preference.getUser() != null &&
+            !preference.getUser().getLogin().equals(SecurityUtils.getCurrentUserLogin().orElse(""))) {
+            return new ResponseEntity<>("error.http.403", HttpStatus.FORBIDDEN);
         }
 
         if (!SecurityUtils.isCurrentUserInRole(AuthoritiesConstants.ADMIN)) {
@@ -70,14 +76,19 @@ public class PreferenceResource {
      * @return the ResponseEntity with status 200 (OK) and with body the updated preference,
      * or with status 400 (Bad Request) if the preference is not valid,
      * or with status 500 (Internal Server Error) if the preference couldn't be updated
-     * @throws URISyntaxException if the Location URI syntax is incorrect
      */
     @PutMapping("/preferences")
-    public ResponseEntity<Preference> updatePreference(@Valid @RequestBody Preference preference) throws URISyntaxException {
+    public ResponseEntity<?> updatePreference(@Valid @RequestBody Preference preference) {
         log.debug("REST request to update Preference : {}", preference);
         if (preference.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
+
+        if (preference.getUser() != null &&
+            !preference.getUser().getLogin().equals(SecurityUtils.getCurrentUserLogin().orElse(""))) {
+            return new ResponseEntity<>("error.http.403", HttpStatus.FORBIDDEN);
+        }
+
         Preference result = preferenceService.save(preference);
         return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, preference.getId().toString()))
@@ -111,9 +122,15 @@ public class PreferenceResource {
      * @return the ResponseEntity with status 200 (OK) and with body the preference, or with status 404 (Not Found)
      */
     @GetMapping("/preferences/{id}")
-    public ResponseEntity<Preference> getPreference(@PathVariable Long id) {
+    public ResponseEntity<?> getPreference(@PathVariable Long id) {
         log.debug("REST request to get Preference : {}", id);
         Optional<Preference> preference = preferenceService.findOne(id);
+
+        if (preference.isPresent() && preference.get().getUser() != null &&
+            !preference.get().getUser().getLogin().equals(SecurityUtils.getCurrentUserLogin().orElse(""))) {
+            return new ResponseEntity<>("error.http.403", HttpStatus.FORBIDDEN);
+        }
+
         return ResponseUtil.wrapOrNotFound(preference);
     }
 
@@ -124,8 +141,16 @@ public class PreferenceResource {
      * @return the ResponseEntity with status 200 (OK)
      */
     @DeleteMapping("/preferences/{id}")
-    public ResponseEntity<Void> deletePreference(@PathVariable Long id) {
+    public ResponseEntity<?> deletePreference(@PathVariable Long id) {
         log.debug("REST request to delete Preference : {}", id);
+
+        Optional<Preference> preference = preferenceService.findOne(id);
+
+        if (preference.isPresent() && preference.get().getUser() != null &&
+            !preference.get().getUser().getLogin().equals(SecurityUtils.getCurrentUserLogin().orElse(""))) {
+            return new ResponseEntity<>("error.http.403", HttpStatus.FORBIDDEN);
+        }
+
         preferenceService.delete(id);
         return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id.toString())).build();
     }

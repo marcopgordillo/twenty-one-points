@@ -1,8 +1,11 @@
 package org.jhipster.health.service.impl;
 
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.jhipster.health.domain.Weight;
 import org.jhipster.health.repository.WeightRepository;
 import org.jhipster.health.repository.search.WeightSearchRepository;
+import org.jhipster.health.security.AuthoritiesConstants;
 import org.jhipster.health.security.SecurityUtils;
 import org.jhipster.health.service.WeightService;
 import org.slf4j.Logger;
@@ -16,6 +19,7 @@ import java.time.*;
 import java.util.List;
 import java.util.Optional;
 
+import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
 import static org.elasticsearch.index.query.QueryBuilders.queryStringQuery;
 
 /**
@@ -100,7 +104,15 @@ public class WeightServiceImpl implements WeightService {
     @Transactional(readOnly = true)
     public Page<Weight> search(String query, Pageable pageable) {
         log.debug("Request to search for a page of Weights for query {}", query);
-        return weightSearchRepository.search(queryStringQuery(query), pageable);    }
+
+        BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery().must(queryStringQuery(query));
+        if (SecurityUtils.isAuthenticated() && !SecurityUtils.isCurrentUserInRole(AuthoritiesConstants.ADMIN)) {
+            queryBuilder = queryBuilder.filter(matchQuery("user.login",
+                SecurityUtils.getCurrentUserLogin().orElse("")));
+        }
+
+        return weightSearchRepository.search(queryBuilder, pageable);
+    }
 
     @Override
     @Transactional(readOnly = true)

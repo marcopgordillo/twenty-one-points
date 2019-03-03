@@ -1,5 +1,7 @@
 package org.jhipster.health.web.rest;
 
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.jhipster.health.TwentyOnePointsApp;
 import org.jhipster.health.domain.Preference;
 import org.jhipster.health.domain.enumeration.Unit;
@@ -316,7 +318,8 @@ public class PreferenceResourceIntTest {
     public void searchPreference() throws Exception {
         // Initialize the database
         preferenceService.save(preference);
-        when(mockPreferenceSearchRepository.search(queryStringQuery("id:" + preference.getId())))
+        BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery().must(queryStringQuery("id:" + preference.getId()));
+        when(mockPreferenceSearchRepository.search(queryBuilder))
             .thenReturn(Collections.singletonList(preference));
         // Search the preference
         restPreferenceMockMvc.perform(get("/api/_search/preferences?query=id:" + preference.getId()))

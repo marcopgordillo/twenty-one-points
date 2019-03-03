@@ -1,5 +1,7 @@
 package org.jhipster.health.web.rest;
 
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.jhipster.health.TwentyOnePointsApp;
 import org.jhipster.health.domain.BloodPressure;
 import org.jhipster.health.domain.User;
@@ -370,7 +372,8 @@ public class BloodPressureResourceIntTest {
     public void searchBloodPressure() throws Exception {
         // Initialize the database
         bloodPressureService.save(bloodPressure);
-        when(mockBloodPressureSearchRepository.search(queryStringQuery("id:" + bloodPressure.getId()), PageRequest.of(0, 20)))
+        BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery().must(queryStringQuery("id:" + bloodPressure.getId()));
+        when(mockBloodPressureSearchRepository.search(queryBuilder, PageRequest.of(0, 20)))
             .thenReturn(new PageImpl<>(Collections.singletonList(bloodPressure), PageRequest.of(0, 1), 1));
         // Search the bloodPressure
         restBloodPressureMockMvc.perform(get("/api/_search/blood-pressures?query=id:" + bloodPressure.getId()))

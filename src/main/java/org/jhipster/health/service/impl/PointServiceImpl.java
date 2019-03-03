@@ -1,8 +1,11 @@
 package org.jhipster.health.service.impl;
 
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.jhipster.health.domain.Point;
 import org.jhipster.health.repository.PointRepository;
 import org.jhipster.health.repository.search.PointSearchRepository;
+import org.jhipster.health.security.AuthoritiesConstants;
 import org.jhipster.health.security.SecurityUtils;
 import org.jhipster.health.service.PointService;
 import org.jhipster.health.web.rest.vm.PointsPerMonth;
@@ -21,6 +24,7 @@ import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 
+import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
 import static org.elasticsearch.index.query.QueryBuilders.queryStringQuery;
 
 /**
@@ -105,7 +109,14 @@ public class PointServiceImpl implements PointService {
     @Transactional(readOnly = true)
     public Page<Point> search(String query, Pageable pageable) {
         log.debug("Request to search for a page of Points for query {}", query);
-        return pointSearchRepository.search(queryStringQuery(query), pageable);    }
+
+        BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery().must(queryStringQuery(query));
+        if (SecurityUtils.isAuthenticated() && !SecurityUtils.isCurrentUserInRole(AuthoritiesConstants.ADMIN)) {
+            queryBuilder = queryBuilder.filter(matchQuery("user.login",
+                SecurityUtils.getCurrentUserLogin().orElse("")));
+        }
+
+        return pointSearchRepository.search(queryBuilder, pageable);    }
 
     @Override
     @Transactional(readOnly = true)
