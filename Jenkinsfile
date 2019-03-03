@@ -5,7 +5,7 @@ node {
         checkout scm
     }
 
-    docker.image('myjhipster').inside('-u jhipster -e GRADLE_USER_HOME=.gradle') {
+//    docker.image('myjhipster').inside('-u jhipster -e GRADLE_USER_HOME=.gradle') {
         stage('check java') {
             sh "java -version"
         }
@@ -62,7 +62,7 @@ node {
                 sh "./gradlew sonarqube --no-daemon"
             }
         }
-    }
+//    }
 
     def dockerImage
     stage('build docker') {
