@@ -5,47 +5,62 @@ node {
         checkout scm
     }
 
-    stage('check java') {
-        sh "java -version"
-    }
+    docker.image('jhipster/jhipster:v5.8.1').inside('-u jhipster -e GRADLE_USER_HOME=.gradle') {
+        stage('check java') {
+            sh "java -version"
+        }
 
-    stage('clean') {
-        sh "chmod +x gradlew"
-        sh "./gradlew clean --no-daemon"
-    }
+        stage('clean') {
+            sh "chmod +x gradlew"
+            sh "./gradlew clean --no-daemon"
+        }
 
-    stage('npm install') {
-        sh "./gradlew npm_install -PnodeInstall --no-daemon"
-    }
+        stage('npm install') {
+            sh "./gradlew npm_install -PnodeInstall --no-daemon"
+        }
 
-    stage('backend tests') {
-        try {
-            sh "./gradlew test -PnodeInstall --no-daemon"
-        } catch(err) {
-            throw err
-        } finally {
-            junit '**/build/**/TEST-*.xml'
+        stage('backend tests') {
+            try {
+                sh "./gradlew test -PnodeInstall --no-daemon"
+            } catch(err) {
+                throw err
+            } finally {
+                junit '**/build/**/TEST-*.xml'
+            }
+        }
+
+        stage('frontend tests') {
+            try {
+                sh "./gradlew npm_run_test -PnodeInstall --no-daemon"
+            } catch(err) {
+                throw err
+            } finally {
+                junit '**/build/test-results/TESTS-*.xml'
+            }
+        }
+
+        stage('packaging') {
+            sh "./gradlew bootWar -x test -Pprod -PnodeInstall --no-daemon"
+            archiveArtifacts artifacts: '**/build/libs/*.war', fingerprint: true
+        }
+
+        stage('quality analysis') {
+            withSonarQubeEnv('sonar') {
+                sh "./gradlew sonarqube --no-daemon"
+            }
         }
     }
 
-    stage('frontend tests') {
-        try {
-            sh "./gradlew npm_run_test -PnodeInstall --no-daemon"
-        } catch(err) {
-            throw err
-        } finally {
-            junit '**/build/test-results/TESTS-*.xml'
-        }
+    def dockerImage
+    stage('build docker') {
+        sh "cp -R src/main/docker build/"
+        sh "cp build/libs/*.war build/docker/"
+        dockerImage = docker.build('marcopgordillo/twentyonepoints', 'build/docker')
     }
 
-    stage('packaging') {
-        sh "./gradlew bootWar -x test -Pprod -PnodeInstall --no-daemon"
-        archiveArtifacts artifacts: '**/build/libs/*.war', fingerprint: true
-    }
-
-    stage('quality analysis') {
-        withSonarQubeEnv('sonar') {
-            sh "./gradlew sonarqube --no-daemon -Dsonar.host.url=http://localhost:9001 -Dsonar.login=42ad350b9a32117dfa01c503893a9c765665c2d6"
+    stage('publish docker') {
+        docker.withRegistry('https://registry.hub.docker.com', 'marcopgordillo') {
+            dockerImage.push 'latest'
         }
     }
 }
