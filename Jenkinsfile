@@ -39,14 +39,23 @@ node {
             }
         }
 
+        stage('protractor tests') {
+            sh '''./gradlew &
+                bootPid=$!
+                sleep 60s
+                yarn e2e
+                kill $bootPid
+                '''
+        }
+
         stage('packaging') {
             sh "./gradlew bootWar -x test -Pprod -PnodeInstall --no-daemon"
             archiveArtifacts artifacts: '**/build/libs/*.war', fingerprint: true
         }
 
-        stage('deployment') {
+        /*stage('deployment') {
             sh "./gradlew deployHeroku --no-daemon"
-        }
+        }*/
 
         stage('quality analysis') {
             withSonarQubeEnv('sonar') {
