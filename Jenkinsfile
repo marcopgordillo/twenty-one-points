@@ -59,9 +59,9 @@ node {
             archiveArtifacts artifacts: '**/build/libs/*.war', fingerprint: true
         }
 
-        stage('deployment') {
+        /*stage('deployment') {
             sh "./gradlew deployHeroku --no-daemon"
-        }
+        }*/
 //    }
 
     def dockerImage
@@ -71,9 +71,9 @@ node {
         dockerImage = docker.build('marcopgordillo/twentyonepoints', 'build/docker')
     }
 
-    stage('publish docker') {
+    /*stage('publish docker') {
         docker.withRegistry('https://registry.hub.docker.com', 'docker-keys') {
             dockerImage.push 'latest'
         }
-    }
+    }*/
 }

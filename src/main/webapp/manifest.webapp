@@ -21,6 +21,21 @@
           "src": "./content/images/jhipster_family_member_0_head-512.png",
           "sizes": "512x512",
           "type": "image/png"
+      },
+      {
+          "src": "./content/images/21-points-logo.png",
+          "sizes": "512x512",
+          "type": "image/png"
+      },
+      {
+          "src": "./content/images/21-points-logo2x.png",
+          "sizes": "512x512",
+          "type": "image/png"
+      },
+      {
+          "src": "./content/images/logo-21-points.png",
+          "sizes": "512x512",
+          "type": "image/png"
       }
   ],
   "theme_color": "#000000",

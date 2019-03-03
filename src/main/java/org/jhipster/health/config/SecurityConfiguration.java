@@ -1,8 +1,8 @@
 package org.jhipster.health.config;
 
-import org.jhipster.health.security.*;
-import org.jhipster.health.security.jwt.*;
-
+import org.jhipster.health.security.AuthoritiesConstants;
+import org.jhipster.health.security.jwt.JWTConfigurer;
+import org.jhipster.health.security.jwt.TokenProvider;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -111,7 +111,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             .antMatchers("/management/info").permitAll()
             .antMatchers("/management/**").hasAuthority(AuthoritiesConstants.ADMIN)
         .and()
-            .apply(securityConfigurerAdapter());
+            .apply(securityConfigurerAdapter())
+        .and()
+            .requiresChannel()
+            .requestMatchers(r -> r.getHeader("X-Forwarded-Proto") != null)
+            .requiresSecure();
 
     }
 
