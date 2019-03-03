@@ -43,9 +43,9 @@ node {
         archiveArtifacts artifacts: '**/build/libs/*.war', fingerprint: true
     }
 
-    stage('quality analysis') {
+/*    stage('quality analysis') {
         withSonarQubeEnv('sonar') {
-            sh "./gradlew sonarqube --no-daemon -Dsonar.host.url=http://localhost:9001 -Dsonar.login=42ad350b9a32117dfa01c503893a9c765665c2d6"
+            sh "./gradlew sonarqube --no-daemon -Dsonar.host.url=http://cbd8f8a42128:9000 -Dsonar.login=42ad350b9a32117dfa01c503893a9c765665c2d6"
         }
-    }
+    }*/
 }

@@ -170,7 +170,6 @@ public class PreferenceResource {
 
     @GetMapping("/my-preference")
     public ResponseEntity<Preference> getUserPreference() {
-        log.debug("REST request to get Preferences : {}");
         return ResponseEntity.ok().body(preferenceService.findUserPreference());
     }
 
