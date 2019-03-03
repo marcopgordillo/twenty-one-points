@@ -19,6 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -58,12 +59,17 @@ public class PointResource {
      */
     @PostMapping("/points")
     @Timed
-    public ResponseEntity<Point> createPoint(@Valid @RequestBody Point point) throws URISyntaxException {
+    public ResponseEntity<?> createPoint(@Valid @RequestBody Point point) throws URISyntaxException {
         log.debug("REST request to save Point : {}", point);
         if (point.getId() != null) {
             return ResponseEntity.badRequest().headers(
                 HeaderUtil.createFailureAlert(ENTITY_NAME, "idexists",
                     "A new points cannot already have an ID")).body(null);
+        }
+
+        if (point.getUser() != null &&
+            !point.getUser().getLogin().equals(SecurityUtils.getCurrentUserLogin().orElse(""))) {
+            return new ResponseEntity<>("error.http.403", HttpStatus.FORBIDDEN);
         }
 
         if (!SecurityUtils.isCurrentUserInRole(AuthoritiesConstants.ADMIN)) {
@@ -84,14 +90,19 @@ public class PointResource {
      * @return the ResponseEntity with status 200 (OK) and with body the updated point,
      * or with status 400 (Bad Request) if the point is not valid,
      * or with status 500 (Internal Server Error) if the point couldn't be updated
-     * @throws URISyntaxException if the Location URI syntax is incorrect
      */
     @PutMapping("/points")
-    public ResponseEntity<Point> updatePoint(@Valid @RequestBody Point point) throws URISyntaxException {
+    public ResponseEntity<?> updatePoint(@Valid @RequestBody Point point) {
         log.debug("REST request to update Point : {}", point);
         if (point.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
+
+        if (point.getUser() != null &&
+            !point.getUser().getLogin().equals(SecurityUtils.getCurrentUserLogin().orElse(""))) {
+            return new ResponseEntity<>("error.http.403", HttpStatus.FORBIDDEN);
+        }
+
         Point result = pointService.save(point);
         return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, point.getId().toString()))
@@ -127,9 +138,15 @@ public class PointResource {
      * @return the ResponseEntity with status 200 (OK) and with body the point, or with status 404 (Not Found)
      */
     @GetMapping("/points/{id}")
-    public ResponseEntity<Point> getPoint(@PathVariable Long id) {
+    public ResponseEntity<?> getPoint(@PathVariable Long id) {
         log.debug("REST request to get Point : {}", id);
         Optional<Point> point = pointService.findOne(id);
+
+        if (point.isPresent() && point.get().getUser() != null &&
+            !point.get().getUser().getLogin().equals(SecurityUtils.getCurrentUserLogin().orElse(""))) {
+            return new ResponseEntity<>("error.http.403", HttpStatus.FORBIDDEN);
+        }
+
         return ResponseUtil.wrapOrNotFound(point);
     }
 
@@ -140,8 +157,16 @@ public class PointResource {
      * @return the ResponseEntity with status 200 (OK)
      */
     @DeleteMapping("/points/{id}")
-    public ResponseEntity<Void> deletePoint(@PathVariable Long id) {
+    public ResponseEntity<?> deletePoint(@PathVariable Long id) {
         log.debug("REST request to delete Point : {}", id);
+
+        Optional<Point> point = pointService.findOne(id);
+
+        if (point.isPresent() && point.get().getUser() != null &&
+            !point.get().getUser().getLogin().equals(SecurityUtils.getCurrentUserLogin().orElse(""))) {
+            return new ResponseEntity<>("error.http.403", HttpStatus.FORBIDDEN);
+        }
+
         pointService.delete(id);
         return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id.toString())).build();
     }

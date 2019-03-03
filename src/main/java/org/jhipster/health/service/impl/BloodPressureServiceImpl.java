@@ -1,8 +1,11 @@
 package org.jhipster.health.service.impl;
 
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.jhipster.health.domain.BloodPressure;
 import org.jhipster.health.repository.BloodPressureRepository;
 import org.jhipster.health.repository.search.BloodPressureSearchRepository;
+import org.jhipster.health.security.AuthoritiesConstants;
 import org.jhipster.health.security.SecurityUtils;
 import org.jhipster.health.service.BloodPressureService;
 import org.slf4j.Logger;
@@ -19,6 +22,7 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
 import static org.elasticsearch.index.query.QueryBuilders.queryStringQuery;
 
 /**
@@ -103,7 +107,14 @@ public class BloodPressureServiceImpl implements BloodPressureService {
     @Transactional(readOnly = true)
     public Page<BloodPressure> search(String query, Pageable pageable) {
         log.debug("Request to search for a page of BloodPressures for query {}", query);
-        return bloodPressureSearchRepository.search(queryStringQuery(query), pageable);    }
+
+        BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery().must(queryStringQuery(query));
+        if (SecurityUtils.isAuthenticated() && !SecurityUtils.isCurrentUserInRole(AuthoritiesConstants.ADMIN)) {
+            queryBuilder = queryBuilder.filter(matchQuery("user.login",
+                SecurityUtils.getCurrentUserLogin().orElse("")));
+        }
+
+        return bloodPressureSearchRepository.search(queryBuilder, pageable);    }
 
     @Override
     @Transactional(readOnly = true)
