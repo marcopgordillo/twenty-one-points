@@ -44,6 +44,10 @@ node {
             archiveArtifacts artifacts: '**/build/libs/*.war', fingerprint: true
         }
 
+        stage('deployment') {
+            sh "./gradlew deployHeroku --no-daemon"
+        }
+
         stage('quality analysis') {
             withSonarQubeEnv('sonar') {
                 sh "./gradlew sonarqube --no-daemon"
