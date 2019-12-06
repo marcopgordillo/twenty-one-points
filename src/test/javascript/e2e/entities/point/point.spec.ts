@@ -41,16 +41,16 @@ describe('Point e2e test', () => {
         await pointComponentsPage.clickOnCreateButton();
         await promise.all([
             pointUpdatePage.setDateInput('2000-12-31'),
-            pointUpdatePage.setExerciseInput('5'),
-            pointUpdatePage.setMealsInput('5'),
-            pointUpdatePage.setAlcoholInput('5'),
+            pointUpdatePage.setExerciseInput('on'),
+            pointUpdatePage.setMealsInput('on'),
+            pointUpdatePage.setAlcoholInput('on'),
             pointUpdatePage.setNotesInput('notes'),
             pointUpdatePage.userSelectLastOption()
         ]);
         expect(await pointUpdatePage.getDateInput()).to.eq('2000-12-31');
-        expect(await pointUpdatePage.getExerciseInput()).to.eq('5');
-        expect(await pointUpdatePage.getMealsInput()).to.eq('5');
-        expect(await pointUpdatePage.getAlcoholInput()).to.eq('5');
+        expect(await pointUpdatePage.getExerciseInput()).to.eq('on');
+        expect(await pointUpdatePage.getMealsInput()).to.eq('on');
+        expect(await pointUpdatePage.getAlcoholInput()).to.eq('on');
         expect(await pointUpdatePage.getNotesInput()).to.eq('notes');
         await pointUpdatePage.save();
         expect(await pointUpdatePage.getSaveButton().isPresent()).to.be.false;

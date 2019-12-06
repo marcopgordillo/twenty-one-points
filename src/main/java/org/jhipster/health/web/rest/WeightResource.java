@@ -63,7 +63,7 @@ public class WeightResource {
             throw new BadRequestAlertException("A new weight cannot already have an ID", ENTITY_NAME, "idexists");
         }
 
-        if (weight.getUser() != null &&
+        if (!SecurityUtils.isCurrentUserInRole(AuthoritiesConstants.ADMIN) && weight.getUser() != null &&
             !weight.getUser().getLogin().equals(SecurityUtils.getCurrentUserLogin().orElse(""))) {
             return new ResponseEntity<>("error.http.403", HttpStatus.FORBIDDEN);
         }
@@ -94,7 +94,7 @@ public class WeightResource {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
 
-        if (weight.getUser() != null &&
+        if (!SecurityUtils.isCurrentUserInRole(AuthoritiesConstants.ADMIN) && weight.getUser() != null &&
             !weight.getUser().getLogin().equals(SecurityUtils.getCurrentUserLogin().orElse(""))) {
             return new ResponseEntity<>("error.http.403", HttpStatus.FORBIDDEN);
         }
@@ -138,7 +138,7 @@ public class WeightResource {
         log.debug("REST request to get Weight : {}", id);
         Optional<Weight> weight = weightService.findOne(id);
 
-        if (weight.isPresent() && weight.get().getUser() != null &&
+        if (!SecurityUtils.isCurrentUserInRole(AuthoritiesConstants.ADMIN) && weight.isPresent() && weight.get().getUser() != null &&
             !weight.get().getUser().getLogin().equals(SecurityUtils.getCurrentUserLogin().orElse(""))) {
             return new ResponseEntity<>("error.http.403", HttpStatus.FORBIDDEN);
         }
@@ -158,7 +158,7 @@ public class WeightResource {
 
         Optional<Weight> weight = weightService.findOne(id);
 
-        if (weight.isPresent() && weight.get().getUser() != null &&
+        if (!SecurityUtils.isCurrentUserInRole(AuthoritiesConstants.ADMIN) && weight.isPresent() && weight.get().getUser() != null &&
             !weight.get().getUser().getLogin().equals(SecurityUtils.getCurrentUserLogin().orElse(""))) {
             return new ResponseEntity<>("error.http.403", HttpStatus.FORBIDDEN);
         }

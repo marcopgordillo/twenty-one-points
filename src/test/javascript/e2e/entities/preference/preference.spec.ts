@@ -40,11 +40,11 @@ describe('Preference e2e test', () => {
 
         await preferenceComponentsPage.clickOnCreateButton();
         await promise.all([
-            preferenceUpdatePage.setWeeklyGoalInput('5'),
+            preferenceUpdatePage.setWeeklyGoalInput('15'),
             preferenceUpdatePage.weightUnitsSelectLastOption(),
             preferenceUpdatePage.userSelectLastOption()
         ]);
-        expect(await preferenceUpdatePage.getWeeklyGoalInput()).to.eq('5');
+        expect(await preferenceUpdatePage.getWeeklyGoalInput()).to.eq('15');
         await preferenceUpdatePage.save();
         expect(await preferenceUpdatePage.getSaveButton().isPresent()).to.be.false;
 

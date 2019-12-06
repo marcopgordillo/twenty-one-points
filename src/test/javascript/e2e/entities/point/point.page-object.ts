@@ -3,7 +3,7 @@ import { element, by, ElementFinder } from 'protractor';
 export class PointComponentsPage {
     createButton = element(by.id('jh-create-entity'));
     deleteButtons = element.all(by.css('jhi-point div table .btn-danger'));
-    title = element.all(by.css('jhi-point div h2#page-heading span')).first();
+    title = element.all(by.css('jhi-point div h2#page-heading')).first();
 
     async clickOnCreateButton() {
         await this.createButton.click();

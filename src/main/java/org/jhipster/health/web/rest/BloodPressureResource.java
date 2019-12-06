@@ -63,7 +63,7 @@ public class BloodPressureResource {
             throw new BadRequestAlertException("A new bloodPressure cannot already have an ID", ENTITY_NAME, "idexists");
         }
 
-        if (bloodPressure.getUser() != null &&
+        if (!SecurityUtils.isCurrentUserInRole(AuthoritiesConstants.ADMIN) && bloodPressure.getUser() != null &&
             !bloodPressure.getUser().getLogin().equals(SecurityUtils.getCurrentUserLogin().orElse(""))) {
             return new ResponseEntity<>("error.http.403", HttpStatus.FORBIDDEN);
         }
@@ -90,7 +90,7 @@ public class BloodPressureResource {
     @PutMapping("/blood-pressures")
     public ResponseEntity<?> updateBloodPressure(@Valid @RequestBody BloodPressure bloodPressure) {
         log.debug("REST request to update BloodPressure : {}", bloodPressure);
-        if (bloodPressure.getId() == null) {
+        if (!SecurityUtils.isCurrentUserInRole(AuthoritiesConstants.ADMIN) && bloodPressure.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
 
@@ -138,7 +138,7 @@ public class BloodPressureResource {
         log.debug("REST request to get BloodPressure : {}", id);
         Optional<BloodPressure> bloodPressure = bloodPressureService.findOne(id);
 
-        if (bloodPressure.isPresent() && bloodPressure.get().getUser() != null &&
+        if (!SecurityUtils.isCurrentUserInRole(AuthoritiesConstants.ADMIN) && bloodPressure.isPresent() && bloodPressure.get().getUser() != null &&
             !bloodPressure.get().getUser().getLogin().equals(SecurityUtils.getCurrentUserLogin().orElse(""))) {
             return new ResponseEntity<>("error.http.403", HttpStatus.FORBIDDEN);
         }
@@ -157,7 +157,7 @@ public class BloodPressureResource {
         log.debug("REST request to delete BloodPressure : {}", id);
 
         Optional<BloodPressure> bloodPressure = bloodPressureService.findOne(id);
-        if (bloodPressure.isPresent() && bloodPressure.get().getUser() != null &&
+        if (!SecurityUtils.isCurrentUserInRole(AuthoritiesConstants.ADMIN) && bloodPressure.isPresent() && bloodPressure.get().getUser() != null &&
             !bloodPressure.get().getUser().getLogin().equals(SecurityUtils.getCurrentUserLogin().orElse(""))) {
             return new ResponseEntity<>("error.http.403", HttpStatus.FORBIDDEN);
         }
