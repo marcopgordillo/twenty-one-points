@@ -25,7 +25,7 @@
         "angular-calendar": "^0.26.11",
         "bootstrap": "4.3.1",
         "core-js": "2.6.3",
-        "moment": "2.24.0",
+        "moment": "2.29.2",
         "ng-jhipster": "0.9.1",
         "ng2-nvd3": "^2.0.0",
         "ngx-cookie": "2.0.1",
